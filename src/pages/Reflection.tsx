@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Event, Reflection as ReflectionType } from '../types';
+import { Event, Reflection as ReflectionType, OVERALL_RATING_LABELS, CONVERSATION_RATING_LABELS } from '../types';
 import { getEvent, saveEvent } from '../store';
 import PageTransition from '../components/PageTransition';
-import RatingDisplay from '../components/RatingDisplay';
+import WordRating from '../components/WordRating';
 
 const Reflection: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -93,8 +93,9 @@ const Reflection: React.FC = () => {
         </p>
 
         <div className="space-y-8">
-          <RatingDisplay
+          <WordRating
             value={overallRating}
+            labels={OVERALL_RATING_LABELS}
             onChange={(v) => setOverallRating(v as 1 | 2 | 3 | 4 | 5)}
             label="How was the evening overall?"
           />
@@ -103,20 +104,20 @@ const Reflection: React.FC = () => {
             <label className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-3">
               Pacing
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-4">
               {(['rushed', 'perfect', 'slow'] as const).map(p => (
                 <button
                   key={p}
                   type="button"
                   onClick={() => setPacing(p)}
-                  className={`font-sans text-[11px] uppercase tracking-label px-5 py-2 border transition-all duration-300
+                  className={`font-body text-sm italic transition-all duration-400
                     ${pacing === p
-                      ? 'border-gold text-gold bg-gold/5'
-                      : 'border-rule text-warm-gray hover:border-gold/40'
+                      ? 'text-gold'
+                      : 'text-warm-gray/30 hover:text-warm-gray/60'
                     }
                   `}
                 >
-                  {p}
+                  {p.charAt(0).toUpperCase() + p.slice(1)}
                 </button>
               ))}
             </div>
@@ -146,10 +147,11 @@ const Reflection: React.FC = () => {
             />
           </div>
 
-          <RatingDisplay
+          <WordRating
             value={conversationQuality}
+            labels={CONVERSATION_RATING_LABELS}
             onChange={(v) => setConversationQuality(v as 1 | 2 | 3 | 4 | 5)}
-            label="Conversation Quality"
+            label="Conversation"
           />
 
           <div>
@@ -159,7 +161,7 @@ const Reflection: React.FC = () => {
             <textarea
               value={guestChemistry}
               onChange={e => setGuestChemistry(e.target.value)}
-              placeholder="Which guests connected well? Any pairings to repeat — or avoid?"
+              placeholder="Which guests connected well? Any pairings to repeat \u2014 or avoid?"
               rows={3}
             />
           </div>

@@ -2,7 +2,7 @@ import { Event, Guest } from '../types';
 
 const EVENTS_KEY = 'ledger_events';
 const GUESTS_KEY = 'ledger_guests';
-const INITIALIZED_KEY = 'ledger_initialized';
+const INITIALIZED_KEY = 'ledger_initialized_v2';
 
 export function getEvents(): Event[] {
   const raw = localStorage.getItem(EVENTS_KEY);
@@ -42,7 +42,7 @@ export function saveGuest(guest: Guest): void {
   const guests = getGuests();
   const idx = guests.findIndex(g => g.id === guest.id);
   if (idx >= 0) {
-    guests[idx] = guest;
+    guests[idx] = { ...guest, updatedAt: new Date().toISOString() };
   } else {
     guests.push(guest);
   }
@@ -54,6 +54,12 @@ export function deleteGuest(id: string): void {
   localStorage.setItem(GUESTS_KEY, JSON.stringify(guests));
 }
 
+export function getGuestGatheringHistory(guestId: string): Event[] {
+  return getEvents()
+    .filter(e => e.guestIds.includes(guestId))
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
 export function initializeSampleData(): void {
   if (localStorage.getItem(INITIALIZED_KEY)) return;
 
@@ -62,56 +68,56 @@ export function initializeSampleData(): void {
       id: 'guest-sofia',
       name: 'Comtesse Sofia de Montague',
       relationship: 'Close friend',
-      dietary: [],
-      allergies: [],
-      preferences: 'Prefers French wines, particularly Burgundy',
-      conversationTopics: ['Sailing', 'Art history', 'Swiss architecture'],
-      personalNotes: 'Recently returned from a sailing trip in the Aegean. Passionate about Impressionist art.',
+      dietary: 'No shellfish. Prefers white wine to red.',
+      preferences: 'Adores French cuisine, especially anything with seasonal vegetables. Always appreciates a cheese course.',
+      conversationTopics: 'Sailing, contemporary art, education philosophy, Swiss politics',
+      personalNotes: 'Two children \u2014 L\u00e9a (12) and Mathieu (9). Recently returned from sailing in Sardinia. Collects first-edition cookbooks.',
       createdAt: '2025-02-01T00:00:00.000Z',
+      updatedAt: '2025-02-01T00:00:00.000Z',
     },
     {
       id: 'guest-isabelle',
       name: 'Isabelle Hartley-Ross',
       relationship: 'Close friend',
-      dietary: [],
-      allergies: [],
-      preferences: 'Enjoys bold reds and seasonal menus',
-      conversationTopics: ['Garden design', 'Travel', 'Literature'],
-      personalNotes: 'Avid gardener. Currently reading Proust in the original French.',
+      dietary: '',
+      preferences: 'Enjoys bold reds and seasonal menus. Partial to anything with garden herbs.',
+      conversationTopics: 'Garden design, travel, literature, Proust',
+      personalNotes: 'Avid gardener. Currently reading Proust in the original French. Has a beautiful walled garden in Vevey.',
       createdAt: '2025-02-01T00:00:00.000Z',
+      updatedAt: '2025-02-01T00:00:00.000Z',
     },
     {
       id: 'guest-alexandra',
       name: 'Alexandra Chen-Beaumont',
       relationship: 'Close friend',
-      dietary: [],
-      allergies: ['Shellfish'],
-      preferences: 'Appreciates Asian-influenced cuisine alongside classical French',
-      conversationTopics: ['Sailing', 'Contemporary art', 'Philanthropy'],
-      personalNotes: 'Collector of contemporary Chinese art. Shared love of sailing with Sofia — seat together.',
+      dietary: 'Shellfish allergy.',
+      preferences: 'Appreciates Asian-influenced cuisine alongside classical French. Loves a bold Burgundy.',
+      conversationTopics: 'Sailing, contemporary art, philanthropy, education',
+      personalNotes: 'Collector of contemporary Chinese art. Shared love of sailing with Sofia \u2014 seat them together. On the board of Art Basel.',
       createdAt: '2025-02-01T00:00:00.000Z',
+      updatedAt: '2025-02-01T00:00:00.000Z',
     },
     {
       id: 'guest-james',
       name: 'James Aldridge',
       relationship: 'Friend',
-      dietary: [],
-      allergies: [],
-      preferences: 'Enjoys a good Bordeaux',
-      conversationTopics: ['Wine', 'History', 'Cricket'],
-      personalNotes: 'Catherine\'s husband. Wonderfully warm conversationalist.',
+      dietary: '',
+      preferences: 'Enjoys a good Bordeaux. Appreciates hearty, well-prepared classics.',
+      conversationTopics: 'Wine, history, cricket, architecture',
+      personalNotes: 'Catherine\'s husband. Wonderfully warm conversationalist. Recently renovated their ch\u00e2teau near Lausanne.',
       createdAt: '2025-02-01T00:00:00.000Z',
+      updatedAt: '2025-02-01T00:00:00.000Z',
     },
     {
       id: 'guest-catherine',
       name: 'Catherine Aldridge',
       relationship: 'Friend',
-      dietary: [],
-      allergies: [],
-      preferences: 'Loves cheese courses',
-      conversationTopics: ['Interior design', 'Opera', 'Education'],
-      personalNotes: 'James\'s wife. On the board of the Geneva Opera.',
+      dietary: '',
+      preferences: 'Loves cheese courses. Partial to Champagne.',
+      conversationTopics: 'Interior design, opera, education, the arts',
+      personalNotes: 'James\'s wife. On the board of the Geneva Opera. Exquisite taste in table arrangements.',
       createdAt: '2025-02-01T00:00:00.000Z',
+      updatedAt: '2025-02-01T00:00:00.000Z',
     },
   ];
 
@@ -125,16 +131,16 @@ export function initializeSampleData(): void {
     guestOfHonorId: 'guest-sofia',
     menu: {
       courses: [
-        { type: 'soup', dish: 'Asparagus velouté', notes: 'Made with white asparagus from the Valais' },
-        { type: 'fish', dish: 'Dover sole meunière', notes: 'Paired beautifully with the Chablis' },
-        { type: 'main', dish: 'Rack of lamb with spring vegetables', notes: 'The lamb rested too long — slightly cool by service' },
-        { type: 'cheese', dish: 'Cheese selection', notes: 'Comté, Vacherin Mont-d\'Or, and aged Gruyère' },
-        { type: 'dessert', dish: 'Tarte Tatin with crème fraîche', notes: 'A triumph — must make again' },
+        { type: 'soup', dish: 'Asparagus velout\u00e9', notes: 'Made with white asparagus from the Valais' },
+        { type: 'fish', dish: 'Dover sole meuni\u00e8re', notes: 'Paired beautifully with the Chablis' },
+        { type: 'main', dish: 'Rack of lamb with spring vegetables', notes: 'The lamb rested too long \u2014 slightly cool by service' },
+        { type: 'cheese', dish: 'Cheese selection', notes: 'Comt\u00e9, Vacherin Mont-d\'Or, and aged Gruy\u00e8re' },
+        { type: 'dessert', dish: 'Tarte Tatin with cr\u00e8me fra\u00eeche', notes: 'A triumph \u2014 must make again' },
       ],
       wines: [
-        { course: 'Soup', name: 'Chasselas', notes: 'Local — a lovely pairing with the velouté' },
+        { course: 'Soup', name: 'Chasselas', notes: 'Local \u2014 a lovely pairing with the velout\u00e9' },
         { course: 'Fish', name: 'Chablis Premier Cru', notes: 'Crisp and mineral, perfect with the sole' },
-        { course: 'Main', name: 'Pomerol 2018', notes: 'Decanted two hours before — excellent' },
+        { course: 'Main', name: 'Pomerol 2018', notes: 'Decanted two hours before \u2014 excellent' },
       ],
       notes: 'All ingredients sourced locally where possible. The asparagus was exceptional this season.',
     },
@@ -142,12 +148,12 @@ export function initializeSampleData(): void {
       tableSettings: 'White linen, grandmother\'s Limoges china, silver candlesticks',
       flowers: 'White peonies and trailing ivy',
       lighting: 'Beeswax candles, dimmed overhead',
-      music: 'Debussy on low — Clair de Lune, Arabesque',
-      scent: 'The peonies and beeswax were enough — no additional scent needed',
+      music: 'Debussy on low \u2014 Clair de Lune, Arabesque',
+      scent: 'The peonies and beeswax were enough \u2014 no additional scent needed',
     },
-    seatingNotes: 'Sofia at right hand. Alexandra and James opposite — they had a wonderful exchange about sailing.',
+    seatingNotes: 'Sofia at right hand. Alexandra and James opposite \u2014 they had a wonderful exchange about sailing.',
     plannedTimeline: [
-      { time: '18:30', activity: 'Aperitifs on the terrace — Champagne and gougères' },
+      { time: '18:30', activity: 'Aperitifs on the terrace \u2014 Champagne and goug\u00e8res' },
       { time: '19:15', activity: 'Move to dining room' },
       { time: '19:30', activity: 'First course served' },
       { time: '21:00', activity: 'Cheese and dessert' },
@@ -158,11 +164,11 @@ export function initializeSampleData(): void {
       overallRating: 4,
       pacing: 'perfect',
       menuHighlights: 'The tarte Tatin was universally adored. The Chablis with the sole was a perfect match.',
-      menuMisses: 'The lamb rested too long — slightly cool by service. Must time more carefully next time.',
+      menuMisses: 'The lamb rested too long \u2014 slightly cool by service. Must time more carefully next time.',
       conversationQuality: 5,
-      guestChemistry: 'Sofia and Alexandra discovered a shared love of sailing — seat them together again. James was in wonderful form.',
+      guestChemistry: 'Sofia and Alexandra discovered a shared love of sailing \u2014 seat them together again. James was in wonderful form.',
       whatToChange: 'Start aperitifs 15 minutes earlier. The terrace at sunset was too beautiful to rush.',
-      unexpectedDelights: 'The light on the lake at sunset was extraordinary. Everyone lingered on the terrace longer than planned — and it was perfect.',
+      unexpectedDelights: 'The light on the lake at sunset was extraordinary. Everyone lingered on the terrace longer than planned \u2014 and it was perfect.',
       freeNotes: 'One of the loveliest evenings of the spring. The intimacy of five guests felt exactly right for the terrace setting.',
     },
     status: 'completed',

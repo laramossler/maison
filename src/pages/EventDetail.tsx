@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Event, Guest, OCCASION_LABELS, STATUS_LABELS, COURSE_LABELS, Course } from '../types';
+import { Event, Guest, OCCASION_LABELS, STATUS_LABELS, COURSE_LABELS, Course, OVERALL_RATING_LABELS, CONVERSATION_RATING_LABELS } from '../types';
 import { getEvent, getGuests, saveEvent } from '../store';
 import PageTransition from '../components/PageTransition';
-import RatingDisplay from '../components/RatingDisplay';
+import WordRating from '../components/WordRating';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -97,7 +97,7 @@ const EventDetail: React.FC = () => {
           <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray">
             {OCCASION_LABELS[event.occasion]}
           </span>
-          <span className="text-rule">·</span>
+          <span className="text-rule">&middot;</span>
           <span className="font-body text-sm text-warm-gray italic">
             {event.location}
           </span>
@@ -110,9 +110,12 @@ const EventDetail: React.FC = () => {
           <div className="space-y-2">
             {guests.map(guest => (
               <div key={guest.id} className="flex items-baseline gap-2">
-                <span className="font-body text-ink">
+                <Link
+                  to={`/guest/${guest.id}`}
+                  className="font-body text-ink hover:text-gold transition-colors duration-300"
+                >
                   {guest.name}
-                </span>
+                </Link>
                 {guest.id === event.guestOfHonorId && (
                   <span className="font-sans text-[9px] uppercase tracking-label text-gold">
                     Guest of Honour
@@ -239,14 +242,24 @@ const EventDetail: React.FC = () => {
         {event.reflection && (
           <Section title="Reflections">
             <div className="space-y-6">
-              <div className="flex items-center gap-8">
-                <RatingDisplay value={event.reflection.overallRating} label="Overall" />
-                <RatingDisplay value={event.reflection.conversationQuality} label="Conversation" />
+              <div className="space-y-4">
+                <WordRating
+                  value={event.reflection.overallRating}
+                  labels={OVERALL_RATING_LABELS}
+                  label="Overall"
+                />
+                <WordRating
+                  value={event.reflection.conversationQuality}
+                  labels={CONVERSATION_RATING_LABELS}
+                  label="Conversation"
+                />
               </div>
 
               <div>
                 <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray/70">Pacing</span>
-                <p className="font-body text-ink text-sm mt-0.5 capitalize">{event.reflection.pacing}</p>
+                <p className="font-body text-ink text-sm mt-0.5 italic">
+                  {event.reflection.pacing.charAt(0).toUpperCase() + event.reflection.pacing.slice(1)}
+                </p>
               </div>
 
               {event.reflection.menuHighlights && (

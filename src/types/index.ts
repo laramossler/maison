@@ -61,12 +61,12 @@ export interface Guest {
   id: string;
   name: string;
   relationship: string;
-  dietary: string[];
-  allergies: string[];
+  dietary: string;
   preferences: string;
-  conversationTopics: string[];
   personalNotes: string;
+  conversationTopics: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export const OCCASION_LABELS: Record<Event['occasion'], string> = {
@@ -100,4 +100,20 @@ export const STATUS_LABELS: Record<Event['status'], string> = {
   planning: 'Planning',
   upcoming: 'Upcoming',
   completed: 'Completed',
+};
+
+export const OVERALL_RATING_LABELS: Record<number, string> = {
+  1: 'Disappointing',
+  2: 'Mixed',
+  3: 'Lovely',
+  4: 'Wonderful',
+  5: 'Exquisite',
+};
+
+export const CONVERSATION_RATING_LABELS: Record<number, string> = {
+  1: 'Stilted',
+  2: 'Polite',
+  3: 'Warm',
+  4: 'Sparkling',
+  5: 'Unforgettable',
 };

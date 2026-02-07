@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { Event, Guest, Course, Wine, TimelineEntry, OCCASION_LABELS, COURSE_TYPES, COURSE_LABELS } from '../types';
-import { saveEvent, getGuests, saveGuest } from '../store';
+import { saveEvent, getGuests, saveGuest, getGuestGatheringHistory } from '../store';
 import PageTransition from '../components/PageTransition';
 
 type Step = 'occasion' | 'guests' | 'menu' | 'atmosphere' | 'timeline' | 'review';
@@ -15,6 +15,67 @@ const STEPS: { key: Step; label: string }[] = [
   { key: 'timeline', label: 'The Timeline' },
   { key: 'review', label: 'Review' },
 ];
+
+const GuestIntelligence: React.FC<{ guest: Guest; isGuestOfHonor: boolean }> = ({ guest, isGuestOfHonor }) => {
+  const [expanded, setExpanded] = useState(false);
+  const history = getGuestGatheringHistory(guest.id);
+
+  if (history.length === 0 && !guest.dietary && !guest.preferences) return null;
+
+  const lastEvent = history[0];
+  const previouslyServed = lastEvent?.menu.courses.map(c => c.dish).join(', ');
+  const previousWines = lastEvent?.menu.wines.map(w => w.name).join(', ');
+
+  return (
+    <div
+      className="mt-2 ml-0 border-l-2 border-gold/20 pl-3 transition-all duration-400"
+    >
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="font-body text-xs text-warm-gray/60 italic hover:text-warm-gray transition-colors duration-300"
+      >
+        {expanded ? 'Hide details' : 'View history & notes'}
+      </button>
+
+      {expanded && (
+        <div className="mt-2 space-y-1.5 animate-fade-in">
+          {lastEvent && (
+            <>
+              <p className="font-body text-xs text-warm-gray italic">
+                Last gathering: {lastEvent.title} ({new Date(lastEvent.date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })})
+              </p>
+              {previouslyServed && (
+                <p className="font-body text-xs text-warm-gray/70 italic">
+                  Previously served: {previouslyServed}
+                </p>
+              )}
+              {previousWines && (
+                <p className="font-body text-xs text-warm-gray/70 italic">
+                  Wines: {previousWines}
+                </p>
+              )}
+              {lastEvent.seatingNotes && (
+                <p className="font-body text-xs text-warm-gray/70 italic">
+                  Seating: {lastEvent.seatingNotes}
+                </p>
+              )}
+            </>
+          )}
+          {guest.dietary && (
+            <p className="font-body text-xs text-warm-gray italic">
+              Note: {guest.dietary}
+            </p>
+          )}
+          {guest.preferences && (
+            <p className="font-body text-xs text-warm-gray/70 italic">
+              Preferences: {guest.preferences}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const NewEvent: React.FC = () => {
   const navigate = useNavigate();
@@ -60,7 +121,7 @@ const NewEvent: React.FC = () => {
   const [seatingNotes, setSeatingNotes] = useState('');
 
   useEffect(() => {
-    setExistingGuests(getGuests());
+    setExistingGuests(getGuests().sort((a, b) => a.name.localeCompare(b.name)));
   }, []);
 
   const stepIndex = STEPS.findIndex(s => s.key === currentStep);
@@ -87,15 +148,15 @@ const NewEvent: React.FC = () => {
       id: uuidv4(),
       name: newGuestName.trim(),
       relationship: '',
-      dietary: [],
-      allergies: [],
+      dietary: '',
       preferences: '',
-      conversationTopics: [],
       personalNotes: '',
+      conversationTopics: '',
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
     saveGuest(guest);
-    setExistingGuests(prev => [...prev, guest]);
+    setExistingGuests(prev => [...prev, guest].sort((a, b) => a.name.localeCompare(b.name)));
     setSelectedGuestIds(prev => [...prev, guest.id]);
     setNewGuestName('');
   };
@@ -158,7 +219,7 @@ const NewEvent: React.FC = () => {
   const selectedGuests = existingGuests.filter(g => selectedGuestIds.includes(g.id));
 
   const StepIndicator = () => (
-    <div className="flex items-center gap-2 mb-10">
+    <div className="flex flex-wrap items-center gap-2 mb-10">
       {STEPS.map((step, i) => (
         <React.Fragment key={step.key}>
           <button
@@ -321,25 +382,43 @@ const NewEvent: React.FC = () => {
                 <label className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-3">
                   Select Guests
                 </label>
-                <div className="space-y-2">
-                  {existingGuests.map(guest => (
-                    <button
-                      key={guest.id}
-                      type="button"
-                      onClick={() => toggleGuest(guest.id)}
-                      className={`w-full text-left py-2 px-3 border-b border-rule transition-all duration-300
-                        ${selectedGuestIds.includes(guest.id)
-                          ? 'text-ink border-gold/30'
-                          : 'text-warm-gray/60'
-                        }
-                      `}
-                    >
-                      <span className="font-body">{guest.name}</span>
-                      {selectedGuestIds.includes(guest.id) && (
-                        <span className="font-sans text-[9px] uppercase tracking-label text-gold ml-2">Selected</span>
-                      )}
-                    </button>
-                  ))}
+                <div className="space-y-0">
+                  {existingGuests.map(guest => {
+                    const isSelected = selectedGuestIds.includes(guest.id);
+                    return (
+                      <div key={guest.id} className="border-b border-rule">
+                        <button
+                          type="button"
+                          onClick={() => toggleGuest(guest.id)}
+                          className={`w-full text-left py-3 transition-all duration-300
+                            ${isSelected ? 'text-ink' : 'text-warm-gray/60'}
+                          `}
+                        >
+                          <div className="flex items-baseline justify-between">
+                            <span className="font-body">{guest.name}</span>
+                            <div className="flex items-center gap-2">
+                              {guest.id === guestOfHonorId && (
+                                <span className="font-sans text-[9px] uppercase tracking-label text-gold">
+                                  Guest of Honour
+                                </span>
+                              )}
+                              {isSelected && (
+                                <span className="font-sans text-[9px] uppercase tracking-label text-gold">
+                                  Selected
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          {guest.relationship && isSelected && (
+                            <span className="font-body text-xs text-warm-gray/50 italic">{guest.relationship}</span>
+                          )}
+                        </button>
+                        {isSelected && (
+                          <GuestIntelligence guest={guest} isGuestOfHonor={guest.id === guestOfHonorId} />
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -647,7 +726,7 @@ const NewEvent: React.FC = () => {
             <div className="flex gap-8">
               <div>
                 <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-1">Date</span>
-                <p className="font-body text-ink text-sm">{date || '—'}</p>
+                <p className="font-body text-ink text-sm">{date || '\u2014'}</p>
               </div>
               <div>
                 <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-1">Occasion</span>
@@ -681,7 +760,7 @@ const NewEvent: React.FC = () => {
               <div>
                 <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-1">Menu</span>
                 <p className="font-body text-ink text-sm">
-                  {courses.map(c => c.dish).join(' · ')}
+                  {courses.map(c => c.dish).join(' \u00b7 ')}
                 </p>
               </div>
             )}
