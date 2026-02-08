@@ -12,6 +12,7 @@ module.exports = {
         gold: '#B8963E',
         'gold-light': '#D4B86A',
         'warm-gray': '#6B6B7B',
+        'warm-brown': '#3D3525',
         'rule': '#E8E4DC',
         'rule-light': '#F0EDE6',
       },

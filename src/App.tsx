@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -8,11 +8,19 @@ import Reflection from './pages/Reflection';
 import GuestBook from './pages/GuestBook';
 import GuestProfile from './pages/GuestProfile';
 import NewGuest from './pages/NewGuest';
-import { initializeSampleData } from './store';
+import Settings from './pages/Settings';
+import FirstRunSetup from './pages/FirstRunSetup';
+import { initializeSampleData, getProfile } from './store';
 
 initializeSampleData();
 
 function App() {
+  const [setupComplete, setSetupComplete] = useState(() => getProfile() !== null);
+
+  if (!setupComplete) {
+    return <FirstRunSetup onComplete={() => setSetupComplete(true)} />;
+  }
+
   return (
     <Router>
       <Layout>
@@ -24,6 +32,7 @@ function App() {
           <Route path="/guests" element={<GuestBook />} />
           <Route path="/guest/:id" element={<GuestProfile />} />
           <Route path="/guests/new" element={<NewGuest />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </Layout>
     </Router>

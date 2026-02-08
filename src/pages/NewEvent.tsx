@@ -5,15 +5,24 @@ import { Event, Guest, Course, Wine, TimelineEntry, OCCASION_LABELS, COURSE_TYPE
 import { saveEvent, getGuests, saveGuest, getGuestGatheringHistory } from '../store';
 import PageTransition from '../components/PageTransition';
 
-type Step = 'occasion' | 'guests' | 'menu' | 'atmosphere' | 'timeline' | 'review';
+type Step = 'occasion' | 'guests' | 'menu' | 'atmosphere' | 'outfit' | 'timeline' | 'review';
 
 const STEPS: { key: Step; label: string }[] = [
   { key: 'occasion', label: 'The Occasion' },
   { key: 'guests', label: 'The Guests' },
   { key: 'menu', label: 'The Menu' },
   { key: 'atmosphere', label: 'The Atmosphere' },
+  { key: 'outfit', label: 'What I Wore' },
   { key: 'timeline', label: 'The Timeline' },
   { key: 'review', label: 'Review' },
+];
+
+const PURPOSE_PLACEHOLDERS = [
+  'To celebrate the first warm evening of spring',
+  'A welcome home for dear friends',
+  'Simply because it had been too long',
+  'To mark the beginning of the season',
+  'An evening of gratitude',
 ];
 
 const GuestIntelligence: React.FC<{ guest: Guest; isGuestOfHonor: boolean }> = ({ guest, isGuestOfHonor }) => {
@@ -83,6 +92,7 @@ const NewEvent: React.FC = () => {
 
   // Form state
   const [title, setTitle] = useState('');
+  const [purpose, setPurpose] = useState('');
   const [date, setDate] = useState('');
   const [occasion, setOccasion] = useState<Event['occasion']>('dinner');
   const [location, setLocation] = useState('');
@@ -111,6 +121,11 @@ const NewEvent: React.FC = () => {
   const [lighting, setLighting] = useState('');
   const [music, setMusic] = useState('');
   const [scent, setScent] = useState('');
+
+  // Outfit
+  const [outfitDescription, setOutfitDescription] = useState('');
+  const [outfitDesigner, setOutfitDesigner] = useState('');
+  const [outfitNotes, setOutfitNotes] = useState('');
 
   // Timeline
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
@@ -196,16 +211,22 @@ const NewEvent: React.FC = () => {
   };
 
   const handleSave = () => {
+    const outfit = outfitDescription.trim()
+      ? { description: outfitDescription.trim(), designer: outfitDesigner.trim() || undefined, notes: outfitNotes.trim() || undefined }
+      : undefined;
+
     const event: Event = {
       id: uuidv4(),
       date,
       title,
+      purpose: purpose.trim() || undefined,
       occasion,
       location,
       guestIds: selectedGuestIds,
       guestOfHonorId: guestOfHonorId || undefined,
       menu: { courses, wines, notes: menuNotes },
       atmosphere: { tableSettings, flowers, lighting, music, scent },
+      outfit,
       seatingNotes,
       plannedTimeline: timeline,
       status,
@@ -300,6 +321,22 @@ const NewEvent: React.FC = () => {
                 placeholder="A Spring Evening in Montreux"
                 className="font-display text-xl"
               />
+            </div>
+
+            <div>
+              <label className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-2">
+                Purpose of This Evening
+              </label>
+              <input
+                type="text"
+                value={purpose}
+                onChange={e => setPurpose(e.target.value)}
+                placeholder={PURPOSE_PLACEHOLDERS[Math.floor(Date.now() / 86400000) % PURPOSE_PLACEHOLDERS.length]}
+                className="font-body italic text-warm-brown"
+              />
+              <p className="font-body text-xs text-warm-gray/40 italic mt-1">
+                Optional &mdash; the reason this evening matters
+              </p>
             </div>
 
             <div>
@@ -664,6 +701,49 @@ const NewEvent: React.FC = () => {
           </div>
         )}
 
+        {/* Step: What I Wore */}
+        {currentStep === 'outfit' && (
+          <div className="space-y-6">
+            <p className="font-body text-sm text-warm-gray italic mb-2">
+              A personal record &mdash; what you chose to wear for the evening.
+            </p>
+            <div>
+              <label className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-2">
+                Description
+              </label>
+              <input
+                type="text"
+                value={outfitDescription}
+                onChange={e => setOutfitDescription(e.target.value)}
+                placeholder="Navy silk midi dress with cream cashmere wrap"
+                className="font-body italic"
+              />
+            </div>
+            <div>
+              <label className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-2">
+                Designer
+              </label>
+              <input
+                type="text"
+                value={outfitDesigner}
+                onChange={e => setOutfitDesigner(e.target.value)}
+                placeholder="The Row"
+              />
+            </div>
+            <div>
+              <label className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-2">
+                Notes
+              </label>
+              <textarea
+                value={outfitNotes}
+                onChange={e => setOutfitNotes(e.target.value)}
+                placeholder="The wrap was perfect for the terrace as the evening cooled"
+                rows={2}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Step: The Timeline */}
         {currentStep === 'timeline' && (
           <div className="space-y-6">
@@ -738,6 +818,13 @@ const NewEvent: React.FC = () => {
               </div>
             </div>
 
+            {purpose && (
+              <div>
+                <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-1">Purpose</span>
+                <p className="font-body text-warm-brown text-sm italic">{purpose}</p>
+              </div>
+            )}
+
             {location && (
               <div>
                 <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-1">Location</span>
@@ -770,6 +857,16 @@ const NewEvent: React.FC = () => {
                 <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-1">Wines</span>
                 <p className="font-body text-ink text-sm">
                   {wines.map(w => w.name).join(', ')}
+                </p>
+              </div>
+            )}
+
+            {outfitDescription && (
+              <div>
+                <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray block mb-1">What I Wore</span>
+                <p className="font-body text-ink text-sm italic">
+                  {outfitDescription}
+                  {outfitDesigner && <> &mdash; {outfitDesigner}</>}
                 </p>
               </div>
             )}

@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Event, OCCASION_LABELS, STATUS_LABELS } from '../types';
-import { getEvents } from '../store';
+import { Event, OCCASION_LABELS } from '../types';
+import { getEvents, getGuests } from '../store';
+import { Guest } from '../types';
 import PageTransition from '../components/PageTransition';
+
+const PageBreakRule: React.FC = () => (
+  <div className="flex items-center gap-3 my-12">
+    <div className="flex-1 border-t border-rule" />
+    <span className="text-gold/30 text-[8px] leading-none">&diams;</span>
+    <div className="flex-1 border-t border-rule" />
+  </div>
+);
 
 const Home: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
+  const [allGuests, setAllGuests] = useState<Guest[]>([]);
 
   useEffect(() => {
     setEvents(getEvents().sort((a, b) => b.date.localeCompare(a.date)));
+    setAllGuests(getGuests());
   }, []);
 
   const formatDate = (dateStr: string) => {
@@ -16,11 +27,23 @@ const Home: React.FC = () => {
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
+  const getGuestNames = (guestIds: string[]) => {
+    return guestIds
+      .map(id => allGuests.find(g => g.id === id)?.name)
+      .filter(Boolean)
+      .join(', ');
+  };
+
   if (events.length === 0) {
     return (
       <PageTransition>
-        <div className="pt-12 text-center">
-          <div className="border-t border-rule mb-12" />
+        <div className="pt-16 text-center">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="flex-1 border-t border-gold/20" />
+            <span className="text-gold/30 text-[8px] leading-none">&diams;</span>
+            <div className="flex-1 border-t border-gold/20" />
+          </div>
+
           <p className="font-display text-2xl md:text-3xl text-ink/80 italic font-light leading-relaxed">
             The first page awaits
           </p>
@@ -34,7 +57,12 @@ const Home: React.FC = () => {
           >
             Record a Gathering
           </Link>
-          <div className="border-t border-rule mt-12" />
+
+          <div className="flex items-center gap-3 mt-12">
+            <div className="flex-1 border-t border-gold/20" />
+            <span className="text-gold/30 text-[8px] leading-none">&diams;</span>
+            <div className="flex-1 border-t border-gold/20" />
+          </div>
         </div>
       </PageTransition>
     );
@@ -43,7 +71,7 @@ const Home: React.FC = () => {
   return (
     <PageTransition>
       <div className="pt-6">
-        <div className="flex items-center justify-end mb-8">
+        <div className="flex items-center justify-end mb-4">
           <Link
             to="/new"
             className="font-sans text-[11px] uppercase tracking-label text-gold hover:text-gold-light transition-colors duration-300"
@@ -52,45 +80,68 @@ const Home: React.FC = () => {
           </Link>
         </div>
 
-        <div className="space-y-0">
-          {events.map((event, index) => (
-            <Link
-              key={event.id}
-              to={`/event/${event.id}`}
-              className="block group"
-            >
-              {index > 0 && <div className="border-t border-rule" />}
-              <div className="py-6 transition-all duration-300 group-hover:pl-2">
-                <div className="flex items-baseline justify-between mb-1">
-                  <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray">
-                    {formatDate(event.date)}
-                  </span>
-                  <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray/60">
-                    {STATUS_LABELS[event.status]}
-                  </span>
-                </div>
-                <h3 className="font-display text-xl md:text-2xl text-ink font-light group-hover:text-gold transition-colors duration-400">
+        {events.map((event, index) => {
+          const menuPreview = event.menu.courses.slice(0, 3).map(c => c.dish).join(' \u00b7 ');
+          const guestNames = getGuestNames(event.guestIds);
+
+          return (
+            <React.Fragment key={event.id}>
+              {index > 0 && <PageBreakRule />}
+
+              <Link
+                to={`/event/${event.id}`}
+                className="block group text-center py-6"
+              >
+                {/* Date */}
+                <span className="font-sans text-[10px] uppercase tracking-[0.16em] text-warm-gray">
+                  {formatDate(event.date)}
+                </span>
+
+                {/* Title — large centered */}
+                <h3 className="font-display text-2xl md:text-3xl text-ink font-light tracking-display mt-3 mb-2 group-hover:text-gold transition-colors duration-400">
                   {event.title}
                 </h3>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray/70">
-                    {OCCASION_LABELS[event.occasion]}
-                  </span>
-                  <span className="text-rule">&middot;</span>
-                  <span className="font-body text-sm text-warm-gray italic">
-                    {event.location}
-                  </span>
-                  <span className="text-rule">&middot;</span>
-                  <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray/70">
-                    {event.guestIds.length} guest{event.guestIds.length !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
 
-        <div className="border-t border-rule mt-2" />
+                {/* Purpose — italic below title */}
+                {event.purpose && (
+                  <p className="font-body text-sm text-warm-brown italic mb-3">
+                    {event.purpose}
+                  </p>
+                )}
+
+                {/* Occasion & Location */}
+                <p className="font-sans text-[10px] uppercase tracking-[0.16em] text-warm-gray/60 mb-4">
+                  {OCCASION_LABELS[event.occasion]}
+                  {event.location && <> &mdash; <span className="normal-case tracking-normal font-body text-xs italic">{event.location}</span></>}
+                </p>
+
+                {/* Menu preview */}
+                {menuPreview && (
+                  <p className="font-body text-sm text-ink/70 italic mb-2">
+                    {menuPreview}
+                  </p>
+                )}
+
+                {/* Outfit preview */}
+                {event.outfit && event.outfit.description && (
+                  <p className="font-body text-xs text-warm-gray/60 italic">
+                    Wore: {event.outfit.description}
+                    {event.outfit.designer && <> &mdash; {event.outfit.designer}</>}
+                  </p>
+                )}
+
+                {/* Guest names */}
+                {guestNames && (
+                  <p className="font-sans text-[9px] uppercase tracking-[0.14em] text-warm-gray/50 mt-4">
+                    {guestNames}
+                  </p>
+                )}
+              </Link>
+            </React.Fragment>
+          );
+        })}
+
+        <PageBreakRule />
       </div>
     </PageTransition>
   );

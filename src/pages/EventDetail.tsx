@@ -93,6 +93,12 @@ const EventDetail: React.FC = () => {
           {event.title}
         </h1>
 
+        {event.purpose && (
+          <p className="font-body text-sm text-warm-brown italic mb-3">
+            {event.purpose}
+          </p>
+        )}
+
         <div className="flex items-center gap-3 mb-10">
           <span className="font-sans text-[10px] uppercase tracking-label text-warm-gray">
             {OCCASION_LABELS[event.occasion]}
@@ -216,6 +222,28 @@ const EventDetail: React.FC = () => {
                   </div>
                 )}
               </div>
+            </Section>
+            <div className="border-t border-rule mb-10" />
+          </>
+        )}
+
+        {/* What I Wore */}
+        {event.outfit && event.outfit.description && (
+          <>
+            <Section title="What I Wore">
+              <p className="font-body text-ink italic">
+                {event.outfit.description}
+              </p>
+              {event.outfit.designer && (
+                <p className="font-sans text-[10px] uppercase tracking-label text-warm-gray/70 mt-2">
+                  {event.outfit.designer}
+                </p>
+              )}
+              {event.outfit.notes && (
+                <p className="font-body text-sm text-warm-gray italic mt-2">
+                  {event.outfit.notes}
+                </p>
+              )}
             </Section>
             <div className="border-t border-rule mb-10" />
           </>

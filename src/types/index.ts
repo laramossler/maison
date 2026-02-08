@@ -29,10 +29,17 @@ export interface Reflection {
   freeNotes: string;
 }
 
+export interface Outfit {
+  description: string;
+  designer?: string;
+  notes?: string;
+}
+
 export interface Event {
   id: string;
   date: string;
   title: string;
+  purpose?: string;
   occasion: 'dinner' | 'luncheon' | 'cocktails' | 'tea' | 'brunch' | 'weekend' | 'holiday' | 'other';
   location: string;
   guestIds: string[];
@@ -49,12 +56,18 @@ export interface Event {
     music: string;
     scent: string;
   };
+  outfit?: Outfit;
   seatingNotes: string;
   plannedTimeline: TimelineEntry[];
   reflection?: Reflection;
   status: 'planning' | 'upcoming' | 'completed';
   createdAt: string;
   updatedAt: string;
+}
+
+export interface LedgerProfile {
+  familyName: string;
+  residence: string;
 }
 
 export interface Guest {

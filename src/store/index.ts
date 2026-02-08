@@ -1,7 +1,8 @@
-import { Event, Guest } from '../types';
+import { Event, Guest, LedgerProfile } from '../types';
 
 const EVENTS_KEY = 'ledger_events';
 const GUESTS_KEY = 'ledger_guests';
+const PROFILE_KEY = 'ledger_profile';
 const INITIALIZED_KEY = 'ledger_initialized_v2';
 
 export function getEvents(): Event[] {
@@ -52,6 +53,15 @@ export function saveGuest(guest: Guest): void {
 export function deleteGuest(id: string): void {
   const guests = getGuests().filter(g => g.id !== id);
   localStorage.setItem(GUESTS_KEY, JSON.stringify(guests));
+}
+
+export function getProfile(): LedgerProfile | null {
+  const raw = localStorage.getItem(PROFILE_KEY);
+  return raw ? JSON.parse(raw) : null;
+}
+
+export function saveProfile(profile: LedgerProfile): void {
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 }
 
 export function getGuestGatheringHistory(guestId: string): Event[] {
@@ -125,6 +135,7 @@ export function initializeSampleData(): void {
     id: 'event-spring-montreux',
     date: '2025-03-15',
     title: 'A Spring Evening in Montreux',
+    purpose: 'To celebrate Sofia\u2019s return from Sardinia and the first warm evening of spring',
     occasion: 'dinner',
     location: 'Villa Pierrefeu, Lake Geneva Terrace',
     guestIds: ['guest-sofia', 'guest-isabelle', 'guest-alexandra', 'guest-james', 'guest-catherine'],
@@ -150,6 +161,11 @@ export function initializeSampleData(): void {
       lighting: 'Beeswax candles, dimmed overhead',
       music: 'Debussy on low \u2014 Clair de Lune, Arabesque',
       scent: 'The peonies and beeswax were enough \u2014 no additional scent needed',
+    },
+    outfit: {
+      description: 'Navy silk midi dress with cream cashmere wrap',
+      designer: 'The Row',
+      notes: 'The wrap was perfect for the terrace as the evening cooled',
     },
     seatingNotes: 'Sofia at right hand. Alexandra and James opposite \u2014 they had a wonderful exchange about sailing.',
     plannedTimeline: [
