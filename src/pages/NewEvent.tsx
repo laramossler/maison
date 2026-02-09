@@ -297,7 +297,7 @@ const NewEvent: React.FC = () => {
           onClick={() => navigate('/')}
           className="font-sans text-[10px] uppercase tracking-label text-warm-gray hover:text-gold transition-colors duration-300 mb-8 block"
         >
-          &larr; Library
+          &larr; Your Gatherings
         </button>
 
         <h1 className="font-display text-3xl md:text-4xl text-ink font-light tracking-display mb-2">

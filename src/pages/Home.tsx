@@ -6,9 +6,9 @@ import { Guest } from '../types';
 import PageTransition from '../components/PageTransition';
 
 const PageBreakRule: React.FC = () => (
-  <div className="flex items-center gap-3 my-12">
+  <div className="flex items-center gap-3 py-6">
     <div className="flex-1 border-t border-rule" />
-    <span className="text-gold/30 text-[8px] leading-none">&diams;</span>
+    <span className="text-gold/40 text-[7px] leading-none" style={{ fontFamily: 'serif' }}>&#9830;</span>
     <div className="flex-1 border-t border-rule" />
   </div>
 );
@@ -40,7 +40,7 @@ const Home: React.FC = () => {
         <div className="pt-16 text-center">
           <div className="flex items-center gap-3 mb-12">
             <div className="flex-1 border-t border-gold/20" />
-            <span className="text-gold/30 text-[8px] leading-none">&diams;</span>
+            <span className="text-gold/40 text-[7px] leading-none" style={{ fontFamily: 'serif' }}>&#9830;</span>
             <div className="flex-1 border-t border-gold/20" />
           </div>
 
@@ -60,7 +60,7 @@ const Home: React.FC = () => {
 
           <div className="flex items-center gap-3 mt-12">
             <div className="flex-1 border-t border-gold/20" />
-            <span className="text-gold/30 text-[8px] leading-none">&diams;</span>
+            <span className="text-gold/40 text-[7px] leading-none" style={{ fontFamily: 'serif' }}>&#9830;</span>
             <div className="flex-1 border-t border-gold/20" />
           </div>
         </div>
@@ -90,49 +90,49 @@ const Home: React.FC = () => {
 
               <Link
                 to={`/event/${event.id}`}
-                className="block group text-center py-6"
+                className="block group text-center py-8"
               >
                 {/* Date */}
-                <span className="font-sans text-[10px] uppercase tracking-[0.16em] text-warm-gray">
+                <span className="block font-sans text-[10px] uppercase tracking-[0.16em] text-gold/70 mb-3">
                   {formatDate(event.date)}
                 </span>
 
                 {/* Title — large centered */}
-                <h3 className="font-display text-2xl md:text-3xl text-ink font-light tracking-display mt-3 mb-2 group-hover:text-gold transition-colors duration-400">
+                <h3 className="font-display text-2xl md:text-3xl text-ink font-light tracking-display leading-snug mb-4 group-hover:text-gold transition-colors duration-400">
                   {event.title}
                 </h3>
 
-                {/* Purpose — italic below title */}
+                {/* Purpose — italic below title, warm brown */}
                 {event.purpose && (
-                  <p className="font-body text-sm text-warm-brown italic mb-3">
+                  <p className="font-body text-sm text-warm-brown italic leading-relaxed max-w-md mx-auto mb-5">
                     {event.purpose}
                   </p>
                 )}
 
                 {/* Occasion & Location */}
-                <p className="font-sans text-[10px] uppercase tracking-[0.16em] text-warm-gray/60 mb-4">
+                <p className="font-sans text-[10px] uppercase tracking-[0.16em] text-warm-gray/60 mb-6">
                   {OCCASION_LABELS[event.occasion]}
                   {event.location && <> &mdash; <span className="normal-case tracking-normal font-body text-xs italic">{event.location}</span></>}
                 </p>
 
                 {/* Menu preview */}
                 {menuPreview && (
-                  <p className="font-body text-sm text-ink/70 italic mb-2">
+                  <p className="font-body text-sm text-ink/60 italic leading-relaxed mb-4">
                     {menuPreview}
                   </p>
                 )}
 
                 {/* Outfit preview */}
                 {event.outfit && event.outfit.description && (
-                  <p className="font-body text-xs text-warm-gray/60 italic">
+                  <p className="font-body text-xs text-warm-gray/50 italic mb-6">
                     Wore: {event.outfit.description}
                     {event.outfit.designer && <> &mdash; {event.outfit.designer}</>}
                   </p>
                 )}
 
-                {/* Guest names */}
+                {/* Guest names — the quietest element */}
                 {guestNames && (
-                  <p className="font-sans text-[9px] uppercase tracking-[0.14em] text-warm-gray/50 mt-4">
+                  <p className="font-sans text-[8px] uppercase tracking-[0.16em] text-warm-gray/40 mt-6 leading-relaxed">
                     {guestNames}
                   </p>
                 )}

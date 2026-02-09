@@ -27,7 +27,7 @@ const EventDetail: React.FC = () => {
         <div className="pt-16 text-center">
           <p className="font-body text-warm-gray italic">This page seems to be missing from the ledger.</p>
           <Link to="/" className="inline-block mt-6 font-sans text-[11px] uppercase tracking-label text-gold">
-            Return to Library
+            Return to Your Gatherings
           </Link>
         </div>
       </PageTransition>
@@ -59,7 +59,7 @@ const EventDetail: React.FC = () => {
           to="/"
           className="inline-block font-sans text-[10px] uppercase tracking-label text-warm-gray hover:text-gold transition-colors duration-300 mb-8"
         >
-          &larr; Library
+          &larr; Your Gatherings
         </Link>
 
         <div className="mb-4 flex items-baseline justify-between">

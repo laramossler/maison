@@ -3,7 +3,7 @@ import { Event, Guest, LedgerProfile } from '../types';
 const EVENTS_KEY = 'ledger_events';
 const GUESTS_KEY = 'ledger_guests';
 const PROFILE_KEY = 'ledger_profile';
-const INITIALIZED_KEY = 'ledger_initialized_v2';
+const INITIALIZED_KEY = 'ledger_initialized_v3';
 
 export function getEvents(): Event[] {
   const raw = localStorage.getItem(EVENTS_KEY);
@@ -129,6 +129,50 @@ export function initializeSampleData(): void {
       createdAt: '2025-02-01T00:00:00.000Z',
       updatedAt: '2025-02-01T00:00:00.000Z',
     },
+    {
+      id: 'guest-philippe',
+      name: 'Philippe Duval',
+      relationship: 'Friend',
+      dietary: '',
+      preferences: 'Enjoys ros\u00e9 in summer, hearty country cooking. Partial to grilled fish.',
+      conversationTopics: 'First editions, rare books, wine collecting, local history',
+      personalNotes: 'Marie-Claire\'s husband. Collects first editions \u2014 discovered a shared passion with James Aldridge.',
+      createdAt: '2025-02-01T00:00:00.000Z',
+      updatedAt: '2025-02-01T00:00:00.000Z',
+    },
+    {
+      id: 'guest-marie-claire',
+      name: 'Marie-Claire Duval',
+      relationship: 'Friend',
+      dietary: '',
+      preferences: 'Loves patisserie. Her financiers are legendary.',
+      conversationTopics: 'Baking, village life, children, gardens',
+      personalNotes: 'Philippe\'s wife. Makes the most extraordinary financiers \u2014 must get the recipe. Warm and generous.',
+      createdAt: '2025-02-01T00:00:00.000Z',
+      updatedAt: '2025-02-01T00:00:00.000Z',
+    },
+    {
+      id: 'guest-maximilian',
+      name: 'Maximilian Voss',
+      relationship: 'Acquaintance',
+      dietary: '',
+      preferences: 'Champagne enthusiast. Appreciates bold, theatrical presentations.',
+      conversationTopics: 'Vineyards, family history, travel, art markets',
+      personalNotes: 'Told the most extraordinary story about his grandfather\'s vineyard at Alexandra\'s birthday. Must invite to a dinner \u2014 he\'d be wonderful at a table.',
+      createdAt: '2025-02-01T00:00:00.000Z',
+      updatedAt: '2025-02-01T00:00:00.000Z',
+    },
+    {
+      id: 'guest-elena',
+      name: 'Elena Kowalski',
+      relationship: 'Friend',
+      dietary: 'Vegetarian.',
+      preferences: 'Loves Sauternes. Appreciates elegant, restrained presentations.',
+      conversationTopics: 'Photography, architecture, contemporary dance, sustainability',
+      personalNotes: 'Alexandra\'s close friend. Quiet but captivating \u2014 draws people out beautifully in conversation.',
+      createdAt: '2025-02-01T00:00:00.000Z',
+      updatedAt: '2025-02-01T00:00:00.000Z',
+    },
   ];
 
   const sampleEvent: Event = {
@@ -192,7 +236,121 @@ export function initializeSampleData(): void {
     updatedAt: '2025-03-16T00:00:00.000Z',
   };
 
+  const sampleEvent2: Event = {
+    id: 'event-regatta-lunch',
+    date: '2025-06-08',
+    title: 'A Sunday Lunch After the Regatta',
+    purpose: 'A casual gathering to celebrate the end of regatta season',
+    occasion: 'luncheon',
+    location: 'The Terrace, Villa Pierrefeu',
+    guestIds: ['guest-isabelle', 'guest-philippe', 'guest-marie-claire', 'guest-james', 'guest-catherine'],
+    menu: {
+      courses: [
+        { type: 'soup', dish: 'Chilled cucumber soup', notes: 'Served in small glasses on arrival \u2014 refreshing after the morning on the water' },
+        { type: 'fish', dish: 'Grilled lake perch with herb butter', notes: 'The perch was caught that morning. Perfection.' },
+        { type: 'dessert', dish: 'Strawberries and cream', notes: 'Local strawberries from the Lavaux. Simple and exactly right.' },
+      ],
+      wines: [
+        { course: 'Lunch', name: 'Ros\u00e9 de Provence', notes: 'Well chilled \u2014 disappeared quickly in the sunshine' },
+        { course: 'Fish', name: 'Sancerre', notes: 'Crisp and perfect with the perch' },
+      ],
+      notes: 'Kept it deliberately simple. The sunshine and the view did the work.',
+    },
+    atmosphere: {
+      tableSettings: 'Blue and white striped linen, casual stoneware, wildflower jars',
+      flowers: 'Wildflowers from the garden \u2014 cornflowers, daisies, grasses',
+      lighting: 'Natural light \u2014 no candles needed at midday',
+      music: 'We let the conversation be the music',
+      scent: 'Cut grass and lake air',
+    },
+    outfit: {
+      description: 'White linen trousers, blue striped cotton blouse, espadrilles',
+      notes: 'Perfectly underdressed. The breeze off the lake was heaven.',
+    },
+    seatingNotes: 'Kept it loose \u2014 people moved around between courses. Philippe and James ended up deep in conversation at the far end.',
+    plannedTimeline: [
+      { time: '12:00', activity: 'Aperitifs on arrival \u2014 chilled cucumber soup and ros\u00e9' },
+      { time: '12:45', activity: 'Sit down to lunch' },
+      { time: '14:00', activity: 'Strawberries and coffee on the lawn' },
+      { time: '15:30', activity: 'Guests depart at leisure' },
+    ],
+    reflection: {
+      overallRating: 3,
+      pacing: 'perfect',
+      menuHighlights: 'The perch was the star. So fresh it barely needed the herb butter.',
+      menuMisses: '',
+      conversationQuality: 4,
+      guestChemistry: 'Philippe and James discovered they both collect first editions \u2014 they barely noticed dessert.',
+      whatToChange: 'Set lunch for 12:30 not 13:00 \u2014 everyone arrived early and the aperitifs stretched wonderfully.',
+      unexpectedDelights: 'Marie-Claire brought her famous financiers as a hostess gift. Must get the recipe.',
+      freeNotes: 'The ease of a summer lunch. No one wanted to leave. The terrace in June is unbeatable.',
+    },
+    status: 'completed',
+    createdAt: '2025-06-01T00:00:00.000Z',
+    updatedAt: '2025-06-09T00:00:00.000Z',
+  };
+
+  const sampleEvent3: Event = {
+    id: 'event-alexandra-birthday',
+    date: '2025-09-20',
+    title: 'Cocktails for Alexandra\u2019s Birthday',
+    purpose: 'An intimate toast to Alexandra\u2019s 30th',
+    occasion: 'cocktails',
+    location: 'The Drawing Room',
+    guestIds: ['guest-alexandra', 'guest-sofia', 'guest-isabelle', 'guest-maximilian', 'guest-elena'],
+    guestOfHonorId: 'guest-alexandra',
+    menu: {
+      courses: [
+        { type: 'amuse-bouche', dish: 'Champagne cocktails', notes: 'A twist on the classic \u2014 with a sugar cube and Angostura' },
+        { type: 'starter', dish: 'Blinis with cr\u00e8me fra\u00eeche and caviar', notes: 'Served on grandmother\u2019s silver trays' },
+        { type: 'starter', dish: 'Smoked salmon roulades', notes: 'With dill and a squeeze of lemon' },
+        { type: 'petit-fours', dish: 'Dark chocolate truffles', notes: 'Dusted with cocoa \u2014 rich and bittersweet' },
+      ],
+      wines: [
+        { course: 'Cocktails', name: 'Pol Roger Brut R\u00e9serve', notes: 'Alexandra\u2019s favourite \u2014 fitting for the occasion' },
+        { course: 'Truffles', name: 'Sauternes', notes: 'A half-glass with the chocolate \u2014 Elena adored this pairing' },
+      ],
+      notes: 'Cocktails rather than dinner \u2014 everything designed to be held in one hand with a glass in the other.',
+    },
+    atmosphere: {
+      tableSettings: 'Silver trays, crystal coupes, no sit-down table',
+      flowers: 'Clusters of white roses in low glass vases',
+      lighting: 'Dozens of tea lights across every surface',
+      music: 'Ella Fitzgerald on low \u2014 Let\u2019s Fall in Love, Night and Day',
+      scent: 'Diptyque Baies',
+    },
+    outfit: {
+      description: 'Black cr\u00eape jumpsuit, statement gold earrings, patent heels',
+      designer: 'Celine',
+      notes: 'Felt exactly right for a cocktail evening.',
+    },
+    seatingNotes: 'No formal seating \u2014 everyone drifted between the drawing room and the small terrace.',
+    plannedTimeline: [
+      { time: '19:00', activity: 'Guests arrive \u2014 Champagne cocktails' },
+      { time: '19:30', activity: 'Blinis and salmon roulades circulated' },
+      { time: '20:30', activity: 'A quiet toast to Alexandra' },
+      { time: '21:00', activity: 'Truffles and Sauternes' },
+      { time: '22:00', activity: 'Evening winds down naturally' },
+    ],
+    reflection: {
+      overallRating: 5,
+      pacing: 'perfect',
+      menuHighlights: 'The Champagne cocktails set the tone immediately. The Sauternes with the truffles was an inspired pairing.',
+      menuMisses: '',
+      conversationQuality: 5,
+      guestChemistry: 'Alexandra was genuinely surprised. The intimacy of just six people made it feel like a real celebration, not a party. Max told the most extraordinary story about his grandfather\u2019s vineyard.',
+      whatToChange: 'Nothing. This was exactly right.',
+      unexpectedDelights: 'The tea lights reflected in the windows created the most beautiful atmosphere as darkness fell. Elena took photographs that captured it perfectly.',
+      freeNotes: 'One of those evenings where everything aligned. The scale was perfect \u2014 intimate enough for real conversation, celebratory enough for a milestone birthday.',
+    },
+    status: 'completed',
+    createdAt: '2025-09-15T00:00:00.000Z',
+    updatedAt: '2025-09-21T00:00:00.000Z',
+  };
+
   guests.forEach(g => saveGuest(g));
   saveEvent(sampleEvent);
+  saveEvent(sampleEvent2);
+  saveEvent(sampleEvent3);
   localStorage.setItem(INITIALIZED_KEY, 'true');
 }
