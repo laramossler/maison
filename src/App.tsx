@@ -10,7 +10,6 @@ import GuestProfile from './pages/GuestProfile';
 import NewGuest from './pages/NewGuest';
 import Settings from './pages/Settings';
 import FirstRunSetup from './pages/FirstRunSetup';
-import LedgerLanding from './pages/LedgerLanding';
 import { initializeSampleData, getProfile } from './store';
 
 initializeSampleData();
@@ -24,23 +23,18 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        <Route path="/landing" element={<LedgerLanding />} />
-        <Route path="*" element={
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/new" element={<NewEvent />} />
-              <Route path="/event/:id" element={<EventDetail />} />
-              <Route path="/event/:id/reflect" element={<Reflection />} />
-              <Route path="/guests" element={<GuestBook />} />
-              <Route path="/guest/:id" element={<GuestProfile />} />
-              <Route path="/guests/new" element={<NewGuest />} />
-              <Route path="/settings" element={<Settings />} />
-            </Routes>
-          </Layout>
-        } />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/new" element={<NewEvent />} />
+          <Route path="/event/:id" element={<EventDetail />} />
+          <Route path="/event/:id/reflect" element={<Reflection />} />
+          <Route path="/guests" element={<GuestBook />} />
+          <Route path="/guest/:id" element={<GuestProfile />} />
+          <Route path="/guests/new" element={<NewGuest />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
+      </Layout>
     </Router>
   );
 }
