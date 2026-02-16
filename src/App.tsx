@@ -10,6 +10,9 @@ import GuestProfile from './pages/GuestProfile';
 import NewGuest from './pages/NewGuest';
 import Settings from './pages/Settings';
 import FirstRunSetup from './pages/FirstRunSetup';
+import WeeklyMenuList from './pages/WeeklyMenuList';
+import WeeklyMenuView from './pages/WeeklyMenuView';
+import WeeklyMenuEdit from './pages/WeeklyMenuEdit';
 import { initializeSampleData, getProfile } from './store';
 
 initializeSampleData();
@@ -33,6 +36,9 @@ function App() {
           <Route path="/guest/:id" element={<GuestProfile />} />
           <Route path="/guests/new" element={<NewGuest />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/menu" element={<WeeklyMenuList />} />
+          <Route path="/menu/:id" element={<WeeklyMenuView />} />
+          <Route path="/menu/:id/edit" element={<WeeklyMenuEdit />} />
         </Routes>
       </Layout>
     </Router>

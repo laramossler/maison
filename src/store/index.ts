@@ -1,8 +1,11 @@
-import { Event, Guest, LedgerProfile } from '../types';
+import { Event, Guest, LedgerProfile, WeeklyMenu, PantrySlot, ReadyBoardItem, DEFAULT_PANTRY_SLOTS, DAYS_OF_WEEK } from '../types';
 
 const EVENTS_KEY = 'ledger_events';
 const GUESTS_KEY = 'ledger_guests';
 const PROFILE_KEY = 'ledger_profile';
+const MENUS_KEY = 'ledger_menus';
+const PANTRY_DEFAULTS_KEY = 'ledger_pantry_defaults';
+const READY_BOARD_KEY = 'ledger_ready_board';
 const INITIALIZED_KEY = 'ledger_initialized_v3';
 
 export function getEvents(): Event[] {
@@ -62,6 +65,108 @@ export function getProfile(): LedgerProfile | null {
 
 export function saveProfile(profile: LedgerProfile): void {
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+}
+
+// --- Weekly Menus ---
+
+export function getMenus(): WeeklyMenu[] {
+  const raw = localStorage.getItem(MENUS_KEY);
+  return raw ? JSON.parse(raw) : [];
+}
+
+export function getMenu(id: string): WeeklyMenu | undefined {
+  return getMenus().find(m => m.id === id);
+}
+
+export function getMenuByWeek(weekStartDate: string): WeeklyMenu | undefined {
+  return getMenus().find(m => m.weekStartDate === weekStartDate);
+}
+
+export function saveMenu(menu: WeeklyMenu): void {
+  const menus = getMenus();
+  const idx = menus.findIndex(m => m.id === menu.id);
+  if (idx >= 0) {
+    menus[idx] = { ...menu, updatedAt: new Date().toISOString() };
+  } else {
+    menus.push(menu);
+  }
+  localStorage.setItem(MENUS_KEY, JSON.stringify(menus));
+}
+
+export function deleteMenu(id: string): void {
+  const menus = getMenus().filter(m => m.id !== id);
+  localStorage.setItem(MENUS_KEY, JSON.stringify(menus));
+}
+
+export function getPantryDefaults(): { name: string; icon: string }[] {
+  const raw = localStorage.getItem(PANTRY_DEFAULTS_KEY);
+  return raw ? JSON.parse(raw) : DEFAULT_PANTRY_SLOTS;
+}
+
+export function savePantryDefaults(slots: { name: string; icon: string }[]): void {
+  localStorage.setItem(PANTRY_DEFAULTS_KEY, JSON.stringify(slots));
+}
+
+export function getReadyBoard(): ReadyBoardItem[] {
+  const raw = localStorage.getItem(READY_BOARD_KEY);
+  return raw ? JSON.parse(raw) : [];
+}
+
+export function saveReadyBoard(items: ReadyBoardItem[]): void {
+  localStorage.setItem(READY_BOARD_KEY, JSON.stringify(items));
+}
+
+export function getMonday(date: Date): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  d.setDate(diff);
+  return d;
+}
+
+export function createBlankMenu(weekStart: Date): WeeklyMenu {
+  const monday = getMonday(weekStart);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  const defaults = getPantryDefaults();
+  const existingReadyBoard = getReadyBoard();
+
+  const days = DAYS_OF_WEEK.map((dayName, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return {
+      date: d.toISOString().split('T')[0],
+      dayOfWeek: dayName,
+      breakfast: '',
+      lunch: '',
+      dinner: '',
+      notes: '',
+    };
+  });
+
+  const pantrySlots: PantrySlot[] = defaults.map(s => ({
+    name: s.name,
+    icon: s.icon,
+    content: '',
+    day: '',
+    status: '',
+  }));
+
+  return {
+    id: '',
+    weekStartDate: monday.toISOString().split('T')[0],
+    weekEndDate: sunday.toISOString().split('T')[0],
+    days,
+    pantrySlots,
+    readyBoard: existingReadyBoard.length > 0 ? existingReadyBoard : [],
+    specialNotes: '',
+    hostingPlanned: false,
+    hostingNotes: '',
+    seasonalNotes: '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 export function getGuestGatheringHistory(guestId: string): Event[] {

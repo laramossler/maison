@@ -130,3 +130,67 @@ export const CONVERSATION_RATING_LABELS: Record<number, string> = {
   4: 'Sparkling',
   5: 'Unforgettable',
 };
+
+// --- Weekly House Menu ---
+
+export interface DayMenu {
+  date: string;
+  dayOfWeek: string;
+  breakfast: string;
+  lunch: string;
+  dinner: string;
+  notes: string;
+}
+
+export interface PantrySlot {
+  name: string;
+  icon: string;
+  content: string;
+  day: string;
+  status: string;
+}
+
+export interface ReadyBoardItem {
+  item: string;
+  category: 'nuts' | 'preserve' | 'cheese' | 'crackers' | 'pickles' | 'baked' | 'drinks' | 'other';
+  available: boolean;
+  notes: string;
+}
+
+export interface WeeklyMenu {
+  id: string;
+  weekStartDate: string;
+  weekEndDate: string;
+  days: DayMenu[];
+  pantrySlots: PantrySlot[];
+  readyBoard: ReadyBoardItem[];
+  specialNotes: string;
+  hostingPlanned: boolean;
+  hostingNotes: string;
+  seasonalNotes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const DEFAULT_PANTRY_SLOTS: { name: string; icon: string }[] = [
+  { name: 'The Bake', icon: '\uD83C\uDF6A' },
+  { name: 'The Bread', icon: '\uD83C\uDF5E' },
+  { name: 'The Ferment', icon: '\uD83E\uDED9' },
+  { name: 'The Cheese', icon: '\uD83E\uDDC0' },
+  { name: 'The Preserve', icon: '\uD83C\uDF6F' },
+  { name: 'The Fresh', icon: '\uD83C\uDF31' },
+  { name: 'The Stock', icon: '\uD83C\uDF72' },
+];
+
+export const READY_BOARD_CATEGORIES: { key: ReadyBoardItem['category']; label: string }[] = [
+  { key: 'nuts', label: 'Nuts' },
+  { key: 'preserve', label: 'Preserve' },
+  { key: 'cheese', label: 'Cheese' },
+  { key: 'crackers', label: 'Crackers & Bread' },
+  { key: 'pickles', label: 'Pickles' },
+  { key: 'baked', label: 'Baked Goods' },
+  { key: 'drinks', label: 'Drinks' },
+  { key: 'other', label: 'Other' },
+];
+
+export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
