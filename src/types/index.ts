@@ -70,6 +70,27 @@ export interface LedgerProfile {
   residence: string;
 }
 
+export interface LifeEvent {
+  type: 'loss' | 'birth' | 'wedding' | 'move' | 'promotion' | 'retirement' | 'illness' | 'divorce' | 'graduation' | 'other';
+  description: string;
+  date: string;
+  acknowledged?: boolean;
+  acknowledgment?: string;
+}
+
+export interface GiftEntry {
+  date: string;
+  occasion: string;
+  gift: string;
+  notes?: string;
+  direction: 'given' | 'received';
+}
+
+export interface ChildBirthday {
+  name: string;
+  date: string;
+}
+
 export interface Guest {
   id: string;
   name: string;
@@ -78,9 +99,53 @@ export interface Guest {
   preferences: string;
   personalNotes: string;
   conversationTopics: string;
+
+  // Key dates
+  birthday?: string;
+  anniversary?: string;
+  childrenBirthdays?: ChildBirthday[];
+
+  // Life events
+  lifeEvents?: LifeEvent[];
+
+  // Cultural context
+  nationality?: string;
+  culturalBackground?: string;
+  languages?: string[];
+  religiousObservances?: string[];
+
+  // Gift history
+  giftHistory?: GiftEntry[];
+
   createdAt: string;
   updatedAt: string;
 }
+
+export const LIFE_EVENT_TYPES: { key: LifeEvent['type']; label: string }[] = [
+  { key: 'loss', label: 'Loss' },
+  { key: 'birth', label: 'Birth' },
+  { key: 'wedding', label: 'Wedding' },
+  { key: 'move', label: 'Move' },
+  { key: 'promotion', label: 'Promotion' },
+  { key: 'retirement', label: 'Retirement' },
+  { key: 'illness', label: 'Illness' },
+  { key: 'divorce', label: 'Divorce' },
+  { key: 'graduation', label: 'Graduation' },
+  { key: 'other', label: 'Other' },
+];
+
+export const LIFE_EVENT_LABELS: Record<LifeEvent['type'], string> = {
+  loss: 'Loss',
+  birth: 'Birth',
+  wedding: 'Wedding',
+  move: 'Move',
+  promotion: 'Promotion',
+  retirement: 'Retirement',
+  illness: 'Illness',
+  divorce: 'Divorce',
+  graduation: 'Graduation',
+  other: 'Other',
+};
 
 export const OCCASION_LABELS: Record<Event['occasion'], string> = {
   dinner: 'Dinner',

@@ -6,7 +6,7 @@ const PROFILE_KEY = 'ledger_profile';
 const MENUS_KEY = 'ledger_menus';
 const PANTRY_DEFAULTS_KEY = 'ledger_pantry_defaults';
 const READY_BOARD_KEY = 'ledger_ready_board';
-const INITIALIZED_KEY = 'ledger_initialized_v3';
+const INITIALIZED_KEY = 'ledger_initialized_v4';
 
 export function getEvents(): Event[] {
   const raw = localStorage.getItem(EVENTS_KEY);
@@ -187,6 +187,16 @@ export function initializeSampleData(): void {
       preferences: 'Adores French cuisine, especially anything with seasonal vegetables. Always appreciates a cheese course.',
       conversationTopics: 'Sailing, contemporary art, education philosophy, Swiss politics',
       personalNotes: 'Two children \u2014 L\u00e9a (12) and Mathieu (9). Recently returned from sailing in Sardinia. Collects first-edition cookbooks.',
+      birthday: '1990-06-14',
+      nationality: 'French',
+      childrenBirthdays: [
+        { name: 'L\u00e9a', date: '2013-04-22' },
+        { name: 'Mathieu', date: '2016-09-03' },
+      ],
+      giftHistory: [
+        { date: '2024-12-25', occasion: 'Christmas 2024', gift: 'First edition of Elizabeth David\'s French Provincial Cooking', direction: 'given', notes: 'She was thrilled \u2014 said it was the most thoughtful gift she\'d received' },
+        { date: '2025-03-15', occasion: 'Hostess gift \u2014 Spring Evening', gift: 'Bouquet of white peonies', direction: 'received', notes: 'Beautiful arrangement, clearly from the florist on Rue de Bourg' },
+      ],
       createdAt: '2025-02-01T00:00:00.000Z',
       updatedAt: '2025-02-01T00:00:00.000Z',
     },
@@ -209,6 +219,15 @@ export function initializeSampleData(): void {
       preferences: 'Appreciates Asian-influenced cuisine alongside classical French. Loves a bold Burgundy.',
       conversationTopics: 'Sailing, contemporary art, philanthropy, education',
       personalNotes: 'Collector of contemporary Chinese art. Shared love of sailing with Sofia \u2014 seat them together. On the board of Art Basel.',
+      birthday: '1995-09-20',
+      nationality: 'British-Chinese',
+      lifeEvents: [
+        { type: 'promotion', description: 'Appointed to the board of Art Basel', date: '2025-01-15', acknowledged: true, acknowledgment: 'Sent a handwritten note and a bottle of Chambertin' },
+      ],
+      giftHistory: [
+        { date: '2025-09-20', occasion: 'Birthday \u2014 30th', gift: 'Champagne cocktail evening', direction: 'given', notes: 'The intimate celebration was the gift itself' },
+        { date: '2024-12-25', occasion: 'Christmas 2024', gift: 'Diptyque Baies candle set', direction: 'given', notes: 'She adores this scent \u2014 used it at her birthday cocktails' },
+      ],
       createdAt: '2025-02-01T00:00:00.000Z',
       updatedAt: '2025-02-01T00:00:00.000Z',
     },
@@ -220,6 +239,11 @@ export function initializeSampleData(): void {
       preferences: 'Enjoys a good Bordeaux. Appreciates hearty, well-prepared classics.',
       conversationTopics: 'Wine, history, cricket, architecture',
       personalNotes: 'Catherine\'s husband. Wonderfully warm conversationalist. Recently renovated their ch\u00e2teau near Lausanne.',
+      nationality: 'British',
+      anniversary: '2010-06-20',
+      lifeEvents: [
+        { type: 'move', description: 'Completed renovation of the ch\u00e2teau near Lausanne', date: '2025-04-01', acknowledged: true, acknowledgment: 'Sent a bottle of Pomerol for the new cellar' },
+      ],
       createdAt: '2025-02-01T00:00:00.000Z',
       updatedAt: '2025-02-01T00:00:00.000Z',
     },
@@ -253,6 +277,11 @@ export function initializeSampleData(): void {
       preferences: 'Loves patisserie. Her financiers are legendary.',
       conversationTopics: 'Baking, village life, children, gardens',
       personalNotes: 'Philippe\'s wife. Makes the most extraordinary financiers \u2014 must get the recipe. Warm and generous.',
+      nationality: 'French',
+      giftHistory: [
+        { date: '2025-06-08', occasion: 'Hostess gift \u2014 Regatta Lunch', gift: 'Her famous financiers', direction: 'received', notes: 'Must get the recipe. Everyone raved.' },
+        { date: '2025-07-15', occasion: 'Thank-you for the financiers', gift: 'Handwritten note and a jar of local honey', direction: 'given', notes: 'The honey was from the apiary near Chexbres' },
+      ],
       createdAt: '2025-02-01T00:00:00.000Z',
       updatedAt: '2025-02-01T00:00:00.000Z',
     },
