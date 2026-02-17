@@ -52,3 +52,22 @@
     transition: opacity 300ms ease;
   }
 }
+
+@media print {
+  body {
+    background-image: none !important;
+    background-color: white !important;
+  }
+  header, footer {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+  .print\:pt-0 {
+    padding-top: 0 !important;
+  }
+}

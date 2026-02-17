@@ -7,6 +7,7 @@ import PageTransition from '../components/PageTransition';
 const GuestBook: React.FC = () => {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [gatheringCounts, setGatheringCounts] = useState<Record<string, number>>({});
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const allGuests = getGuests().sort((a, b) => a.name.localeCompare(b.name));
@@ -19,6 +20,19 @@ const GuestBook: React.FC = () => {
     });
     setGatheringCounts(counts);
   }, []);
+
+  const filteredGuests = guests.filter(guest => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return (
+      guest.name.toLowerCase().includes(q) ||
+      guest.relationship.toLowerCase().includes(q) ||
+      guest.dietary.toLowerCase().includes(q) ||
+      guest.preferences.toLowerCase().includes(q) ||
+      guest.personalNotes.toLowerCase().includes(q) ||
+      guest.conversationTopics.toLowerCase().includes(q)
+    );
+  });
 
   if (guests.length === 0) {
     return (
@@ -47,7 +61,7 @@ const GuestBook: React.FC = () => {
   return (
     <PageTransition>
       <div className="pt-8">
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center justify-between mb-6">
           <h2 className="font-sans text-[10px] uppercase tracking-label text-warm-gray">
             Guest Book
           </h2>
@@ -59,8 +73,26 @@ const GuestBook: React.FC = () => {
           </Link>
         </div>
 
+        <div className="mb-8">
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search guests..."
+            className="font-body text-sm !border-0 !border-b !border-rule !py-1.5 text-ink placeholder:text-warm-gray/30 w-full max-w-[200px]"
+          />
+        </div>
+
+        {filteredGuests.length === 0 && search.trim() && (
+          <div className="text-center py-12">
+            <p className="font-body text-sm text-warm-gray/50 italic">
+              No guests match &ldquo;{search}&rdquo;
+            </p>
+          </div>
+        )}
+
         <div className="space-y-0">
-          {guests.map((guest, index) => (
+          {filteredGuests.map((guest, index) => (
             <Link
               key={guest.id}
               to={`/guest/${guest.id}`}

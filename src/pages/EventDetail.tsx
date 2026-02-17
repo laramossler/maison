@@ -353,6 +353,12 @@ const EventDetail: React.FC = () => {
               Edit Reflections
             </Link>
           )}
+          <Link
+            to={`/event/${event.id}/brief`}
+            className="font-sans text-[11px] uppercase tracking-label text-warm-gray hover:text-gold transition-colors duration-300"
+          >
+            Kitchen Brief
+          </Link>
         </div>
       </div>
     </PageTransition>

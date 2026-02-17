@@ -16,6 +16,7 @@ const PageBreakRule: React.FC = () => (
 const Home: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [allGuests, setAllGuests] = useState<Guest[]>([]);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     setEvents(getEvents().sort((a, b) => b.date.localeCompare(a.date)));
@@ -33,6 +34,29 @@ const Home: React.FC = () => {
       .filter(Boolean)
       .join(', ');
   };
+
+  const getGuestNamesForEvent = (guestIds: string[]) => {
+    return guestIds
+      .map(id => allGuests.find(g => g.id === id)?.name || '')
+      .filter(Boolean);
+  };
+
+  const filteredEvents = events.filter(event => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    const guestNames = getGuestNamesForEvent(event.guestIds);
+    const menuDishes = event.menu.courses.map(c => c.dish);
+    const wineNames = event.menu.wines.map(w => w.name);
+    return (
+      event.title.toLowerCase().includes(q) ||
+      event.location.toLowerCase().includes(q) ||
+      (event.purpose || '').toLowerCase().includes(q) ||
+      event.date.includes(q) ||
+      guestNames.some(n => n.toLowerCase().includes(q)) ||
+      menuDishes.some(d => d.toLowerCase().includes(q)) ||
+      wineNames.some(w => w.toLowerCase().includes(q))
+    );
+  });
 
   if (events.length === 0) {
     return (
@@ -71,16 +95,33 @@ const Home: React.FC = () => {
   return (
     <PageTransition>
       <div className="pt-6">
-        <div className="flex items-center justify-end mb-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex-1 mr-4">
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search gatherings..."
+              className="font-body text-sm !border-0 !border-b !border-rule !py-1.5 text-ink placeholder:text-warm-gray/30 w-full max-w-[200px]"
+            />
+          </div>
           <Link
             to="/new"
-            className="font-sans text-[11px] uppercase tracking-label text-gold hover:text-gold-light transition-colors duration-300"
+            className="font-sans text-[11px] uppercase tracking-label text-gold hover:text-gold-light transition-colors duration-300 shrink-0"
           >
             + New Gathering
           </Link>
         </div>
 
-        {events.map((event, index) => {
+        {filteredEvents.length === 0 && search.trim() && (
+          <div className="text-center py-12">
+            <p className="font-body text-sm text-warm-gray/50 italic">
+              No gatherings match &ldquo;{search}&rdquo;
+            </p>
+          </div>
+        )}
+
+        {filteredEvents.map((event, index) => {
           const menuPreview = event.menu.courses.slice(0, 3).map(c => c.dish).join(' \u00b7 ');
           const guestNames = getGuestNames(event.guestIds);
 

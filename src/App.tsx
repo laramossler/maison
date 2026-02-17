@@ -13,6 +13,7 @@ import FirstRunSetup from './pages/FirstRunSetup';
 import WeeklyMenuList from './pages/WeeklyMenuList';
 import WeeklyMenuView from './pages/WeeklyMenuView';
 import WeeklyMenuEdit from './pages/WeeklyMenuEdit';
+import KitchenBrief from './pages/KitchenBrief';
 import { initializeSampleData, getProfile } from './store';
 
 initializeSampleData();
@@ -32,6 +33,7 @@ function App() {
           <Route path="/new" element={<NewEvent />} />
           <Route path="/event/:id" element={<EventDetail />} />
           <Route path="/event/:id/reflect" element={<Reflection />} />
+          <Route path="/event/:id/brief" element={<KitchenBrief />} />
           <Route path="/guests" element={<GuestBook />} />
           <Route path="/guest/:id" element={<GuestProfile />} />
           <Route path="/guests/new" element={<NewGuest />} />
