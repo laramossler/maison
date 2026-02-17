@@ -1,4 +1,13 @@
 import { Event, Guest, LedgerProfile, WeeklyMenu, PantrySlot, ReadyBoardItem, DEFAULT_PANTRY_SLOTS, DAYS_OF_WEEK } from '../types';
+import {
+  syncEventToSupabase,
+  syncDeleteEventToSupabase,
+  syncGuestToSupabase,
+  syncDeleteGuestToSupabase,
+  syncProfileToSupabase,
+  syncMenuToSupabase,
+  syncDeleteMenuToSupabase,
+} from './supabaseSync';
 
 const EVENTS_KEY = 'ledger_events';
 const GUESTS_KEY = 'ledger_guests';
@@ -20,17 +29,20 @@ export function getEvent(id: string): Event | undefined {
 export function saveEvent(event: Event): void {
   const events = getEvents();
   const idx = events.findIndex(e => e.id === event.id);
+  const updated = { ...event, updatedAt: new Date().toISOString() };
   if (idx >= 0) {
-    events[idx] = { ...event, updatedAt: new Date().toISOString() };
+    events[idx] = updated;
   } else {
-    events.push(event);
+    events.push(updated);
   }
   localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+  syncEventToSupabase(updated);
 }
 
 export function deleteEvent(id: string): void {
   const events = getEvents().filter(e => e.id !== id);
   localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+  syncDeleteEventToSupabase(id);
 }
 
 export function getGuests(): Guest[] {
@@ -45,17 +57,20 @@ export function getGuest(id: string): Guest | undefined {
 export function saveGuest(guest: Guest): void {
   const guests = getGuests();
   const idx = guests.findIndex(g => g.id === guest.id);
+  const updated = { ...guest, updatedAt: new Date().toISOString() };
   if (idx >= 0) {
-    guests[idx] = { ...guest, updatedAt: new Date().toISOString() };
+    guests[idx] = updated;
   } else {
-    guests.push(guest);
+    guests.push(updated);
   }
   localStorage.setItem(GUESTS_KEY, JSON.stringify(guests));
+  syncGuestToSupabase(updated);
 }
 
 export function deleteGuest(id: string): void {
   const guests = getGuests().filter(g => g.id !== id);
   localStorage.setItem(GUESTS_KEY, JSON.stringify(guests));
+  syncDeleteGuestToSupabase(id);
 }
 
 export function getProfile(): LedgerProfile | null {
@@ -65,6 +80,7 @@ export function getProfile(): LedgerProfile | null {
 
 export function saveProfile(profile: LedgerProfile): void {
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  syncProfileToSupabase(profile);
 }
 
 // --- Weekly Menus ---
@@ -85,17 +101,20 @@ export function getMenuByWeek(weekStartDate: string): WeeklyMenu | undefined {
 export function saveMenu(menu: WeeklyMenu): void {
   const menus = getMenus();
   const idx = menus.findIndex(m => m.id === menu.id);
+  const updated = { ...menu, updatedAt: new Date().toISOString() };
   if (idx >= 0) {
-    menus[idx] = { ...menu, updatedAt: new Date().toISOString() };
+    menus[idx] = updated;
   } else {
-    menus.push(menu);
+    menus.push(updated);
   }
   localStorage.setItem(MENUS_KEY, JSON.stringify(menus));
+  syncMenuToSupabase(updated);
 }
 
 export function deleteMenu(id: string): void {
   const menus = getMenus().filter(m => m.id !== id);
   localStorage.setItem(MENUS_KEY, JSON.stringify(menus));
+  syncDeleteMenuToSupabase(id);
 }
 
 export function getPantryDefaults(): { name: string; icon: string }[] {

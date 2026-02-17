@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LedgerProfile } from '../types';
 import { getProfile, saveProfile } from '../store';
+import { useAuth } from '../contexts/AuthContext';
 import PageTransition from '../components/PageTransition';
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
+  const { user, signOut, isDemo } = useAuth();
   const [familyName, setFamilyName] = useState('');
   const [residence, setResidence] = useState('');
   const [saved, setSaved] = useState(false);
@@ -90,6 +92,24 @@ const Settings: React.FC = () => {
             Save
           </button>
         </div>
+
+        {!isDemo && user && (
+          <div className="mt-16 pt-8 border-t border-rule">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-body text-sm text-warm-gray">
+                  Signed in as <span className="italic">{user.email}</span>
+                </p>
+              </div>
+              <button
+                onClick={signOut}
+                className="font-sans text-[11px] uppercase tracking-label text-warm-gray/60 border border-rule px-6 py-2 hover:text-ink hover:border-warm-gray transition-all duration-400"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </PageTransition>
   );
