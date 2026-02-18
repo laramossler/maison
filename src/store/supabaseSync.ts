@@ -149,6 +149,9 @@ export async function syncFromSupabase(): Promise<void> {
     const profile: LedgerProfile = {
       familyName: profileRow.family_name || '',
       residence: profileRow.residence || '',
+      hostingFrequency: profileRow.hosting_frequency || undefined,
+      biggestChallenge: profileRow.biggest_challenge || undefined,
+      whatMatters: profileRow.what_matters || undefined,
     };
     localStorage.setItem('ledger_profile', JSON.stringify(profile));
   }
@@ -200,6 +203,9 @@ export async function syncProfileToSupabase(profile: LedgerProfile): Promise<voi
       id: user.id,
       family_name: profile.familyName,
       residence: profile.residence,
+      hosting_frequency: profile.hostingFrequency || null,
+      biggest_challenge: profile.biggestChallenge || null,
+      what_matters: profile.whatMatters || null,
       updated_at: new Date().toISOString(),
     });
 }

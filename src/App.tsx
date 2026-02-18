@@ -16,7 +16,7 @@ import WeeklyMenuEdit from './pages/WeeklyMenuEdit';
 import KitchenBrief from './pages/KitchenBrief';
 import Login from './pages/Login';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { initializeSampleData, getProfile } from './store';
+import { initializeSampleData, getProfile, saveProfile } from './store';
 import { syncFromSupabase } from './store/supabaseSync';
 
 function AppContent() {
@@ -24,11 +24,14 @@ function AppContent() {
   const [dataLoaded, setDataLoaded] = useState(isDemo);
   const [setupComplete, setSetupComplete] = useState(false);
 
-  // In demo mode, initialize sample data
+  // In demo mode, initialize sample data and auto-create demo profile (skip onboarding)
   useEffect(() => {
     if (isDemo) {
       initializeSampleData();
-      setSetupComplete(getProfile() !== null);
+      if (!getProfile()) {
+        saveProfile({ familyName: 'The Montague Household', residence: 'Villa Pierrefeu, Montreux' });
+      }
+      setSetupComplete(true);
       setDataLoaded(true);
     }
   }, [isDemo]);

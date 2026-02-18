@@ -65,9 +65,17 @@ export interface Event {
   updatedAt: string;
 }
 
+export type HostingFrequency = 'few-times-year' | 'monthly' | 'weekly' | 'aspirational';
+export type HostingChallenge = 'remembering' | 'pairing' | 'guest-mix' | 'organizing';
+export type HostingMotivation = 'details' | 'people' | 'tradition' | 'ease';
+
 export interface LedgerProfile {
   familyName: string;
   residence: string;
+  // Onboarding insights
+  hostingFrequency?: HostingFrequency;
+  biggestChallenge?: HostingChallenge;
+  whatMatters?: HostingMotivation;
 }
 
 export interface LifeEvent {

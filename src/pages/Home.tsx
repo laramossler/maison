@@ -17,10 +17,18 @@ const Home: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [allGuests, setAllGuests] = useState<Guest[]>([]);
   const [search, setSearch] = useState('');
+  const [showReveal, setShowReveal] = useState(false);
 
   useEffect(() => {
     setEvents(getEvents().sort((a, b) => b.date.localeCompare(a.date)));
     setAllGuests(getGuests());
+
+    // Show reveal toast after first onboarding
+    if (localStorage.getItem('ledger_first_reveal') === 'true') {
+      setShowReveal(true);
+      localStorage.removeItem('ledger_first_reveal');
+      setTimeout(() => setShowReveal(false), 5000);
+    }
   }, []);
 
   const formatDate = (dateStr: string) => {
@@ -94,6 +102,16 @@ const Home: React.FC = () => {
 
   return (
     <PageTransition>
+      {showReveal && (
+        <div
+          className="text-center py-6 mb-4 transition-opacity duration-500"
+          style={{ opacity: showReveal ? 1 : 0 }}
+        >
+          <p className="font-body text-sm text-warm-gray italic leading-relaxed">
+            Your ledger has begun. Every evening you record becomes part of your story.
+          </p>
+        </div>
+      )}
       <div className="pt-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex-1 mr-4">

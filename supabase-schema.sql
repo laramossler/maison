@@ -6,9 +6,17 @@ create table profiles (
   id uuid references auth.users on delete cascade primary key,
   family_name text default '',
   residence text default '',
+  hosting_frequency text,
+  biggest_challenge text,
+  what_matters text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
+
+-- Migration for existing deployments (run if profiles table already exists):
+-- alter table profiles add column if not exists hosting_frequency text;
+-- alter table profiles add column if not exists biggest_challenge text;
+-- alter table profiles add column if not exists what_matters text;
 
 -- Guests
 create table guests (
