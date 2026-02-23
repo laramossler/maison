@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Ledger — Discovery</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #2c2a25;
+    --ink-light: #5a5650;
+    --ink-faint: #8a8478;
+    --paper: #faf7f0;
+    --parchment: #f3efe5;
+    --warm: #e8e1d2;
+    --accent: #7a6842;
+    --accent-soft: #b8a67a;
+    --sage: #5e6e52;
+    --border: #ddd6c8;
+    --border-light: #ece7db;
+    --rose: #8f5f5f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--warm);
+    color: var(--ink);
+    font-family: 'Libre Baskerville', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+    min-height: 100vh;
+  }
+  .form-page {
+    background: var(--paper);
+    max-width: 680px;
+    width: 100%;
+    padding: 56px 48px 48px;
+    box-shadow:
+      0 1px 3px rgba(44,42,37,0.06),
+      0 8px 24px rgba(44,42,37,0.08),
+      0 24px 48px rgba(44,42,37,0.04);
+    position: relative;
+  }
+  .form-page::before {
+    content: '';
+    position: absolute;
+    top: 18px; left: 18px; right: 18px; bottom: 18px;
+    border: 1px solid var(--border-light);
+    pointer-events: none;
+  }
+  /* Header */
+  .form-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .form-header .mono-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 16px;
+  }
+  .form-header h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    color: var(--ink);
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+  .form-header .intro {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--ink-light);
+    max-width: 520px;
+    margin: 0 auto;
+    font-style: italic;
+  }
+  /* Sections */
+  .form-section {
+    margin-bottom: 44px;
+  }
+  .section-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 28px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  /* Questions */
+  .question {
+    margin-bottom: 32px;
+  }
+  .question label {
+    display: block;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .question .hint {
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    font-style: italic;
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  /* Text inputs */
+  textarea, input[type="text"], input[type="email"] {
+    width: 100%;
+    padding: 14px 16px;
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink);
+    background: var(--parchment);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    resize: vertical;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  textarea:focus, input[type="text"]:focus, input[type="email"]:focus {
+    outline: none;
+    border-color: var(--accent-soft);
+    box-shadow: 0 0 0 3px rgba(122, 104, 66, 0.08);
+  }
+  textarea {
+    min-height: 100px;
+  }
+  textarea.short {
+    min-height: 72px;
+  }
+  /* Radio & Checkbox groups */
+  .option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .option-group label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--parchment);
+    border: 1px solid var(--border-light);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+  .option-group label:hover {
+    border-color: var(--accent-soft);
+    background: #f7f3ea;
+  }
+  .option-group input[type="radio"],
+  .option-group input[type="checkbox"] {
+    margin-top: 3px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+  }
+  .option-group input[type="radio"]:checked + span,
+  .option-group input[type="checkbox"]:checked + span {
+    color: var(--ink);
+  }
+  .option-group label:has(input:checked) {
+    border-color: var(--accent-soft);
+    background: #f5f0e4;
+  }
+  /* Other field inline */
+  .other-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--parchment);
+    border: 1px solid var(--border-light);
+    border-radius: 3px;
+  }
+  .other-wrapper input[type="checkbox"] {
+    margin-top: 3px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+  }
+  .other-wrapper input[type="text"] {
+    flex: 1;
+    padding: 4px 8px;
+    font-size: 13px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+  }
+  .other-wrapper input[type="text"]:focus {
+    box-shadow: none;
+    border-bottom-color: var(--accent);
+  }
+  /* Name field */
+  .name-field {
+    margin-bottom: 36px;
+  }
+  .name-field label {
+    font-size: 15px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .name-field input {
+    max-width: 320px;
+  }
+  /* Submit */
+  .submit-section {
+    text-align: center;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  .submit-section .closing {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-light);
+    margin-bottom: 24px;
+    line-height: 1.7;
+  }
+  button[type="submit"] {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 16px 48px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  button[type="submit"]:hover {
+    background: var(--accent);
+  }
+  button[type="submit"]:active {
+    transform: scale(0.98);
+  }
+  /* Footer */
+  .form-footer {
+    text-align: center;
+    margin-top: 36px;
+    padding-top: 20px;
+  }
+  .form-footer .mark {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  /* Success state */
+  .success-message {
+    display: none;
+    text-align: center;
+    padding: 80px 40px;
+  }
+  .success-message h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .success-message p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--ink-light);
+    font-style: italic;
+  }
+  /* Responsive */
+  @media (max-width: 600px) {
+    .form-page {
+      padding: 40px 28px 36px;
+    }
+    .form-page::before {
+      top: 12px; left: 12px; right: 12px; bottom: 12px;
+    }
+    .form-header h1 {
+      font-size: 26px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="form-page">
+  <div class="form-header">
+    <div class="mono-label">The Ledger</div>
+    <h1>I'd Love Your Eyes on This</h1>
+    <p class="intro">
+      I've been building something inspired by the entertaining ledgers from finishing school — a beautiful, private way to plan, document, and remember your gatherings. Your perspective would mean the world to me. This takes about 10 minutes.
+    </p>
+  </div>
+  <form id="discoveryForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+    <!-- Name -->
+    <div class="name-field">
+      <label for="name">Your first name</label>
+      <input type="text" id="name" name="name" placeholder="So I know who's answering" required>
+    </div>
+    <!-- SECTION 1: Your Hosting Life -->
+    <div class="form-section">
+      <div class="section-title">Your Hosting Life</div>
+      <!-- Q1 -->
+      <div class="question">
+        <label>How often do you host people in your home?</label>
+        <div class="option-group">
+          <label><input type="radio" name="hosting_frequency" value="few_times_year" required><span>A few times a year for special occasions</span></label>
+          <label><input type="radio" name="hosting_frequency" value="monthly"><span>Monthly — it's part of my rhythm</span></label>
+          <label><input type="radio" name="hosting_frequency" value="weekly"><span>Weekly — my door is always open</span></label>
+          <label><input type="radio" name="hosting_frequency" value="not_now"><span>I'm not really hosting right now, but I want to be</span></label>
+        </div>
+      </div>
+      <!-- Q2 -->
+      <div class="question">
+        <label>Think of the last time you hosted something — a dinner, a party, even a casual lunch. What was it?</label>
+        <textarea name="last_hosted" placeholder="Tell me about it..."></textarea>
+      </div>
+      <!-- Q3 -->
+      <div class="question">
+        <label>What's the hardest part of hosting for you?</label>
+        <p class="hint">Select all that apply</p>
+        <div class="option-group">
+          <label><input type="checkbox" name="hosting_challenges" value="remembering_served"><span>Remembering what I've served before to the same guests</span></label>
+          <label><input type="checkbox" name="hosting_challenges" value="menu_planning"><span>Menu planning and knowing what goes together</span></label>
+          <label><input type="checkbox" name="hosting_challenges" value="organizing"><span>Getting organized — timing, shopping, prep</span></label>
+          <label><input type="checkbox" name="hosting_challenges" value="atmosphere"><span>Making the table/space feel beautiful</span></label>
+          <label><input type="checkbox" name="hosting_challenges" value="guest_mix"><span>Guest mix — who to invite together</span></label>
+          <label><input type="checkbox" name="hosting_challenges" value="follow_up"><span>Following up afterward — thank-you notes, keeping the relationship warm</span></label>
+          <div class="other-wrapper">
+            <input type="checkbox" name="hosting_challenges" value="other" id="q3other">
+            <input type="text" name="hosting_challenges_other" placeholder="Other...">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- SECTION 2: How You Track Things Now -->
+    <div class="form-section">
+      <div class="section-title">How You Track Things Now</div>
+      <!-- Q4 -->
+      <div class="question">
+        <label>Do you keep any kind of record of your entertaining? Describe what you do — even if it's nothing. That's useful to know too.</label>
+        <textarea name="current_tracking" placeholder="Phone notes, a notebook, photos, nothing at all..."></textarea>
+      </div>
+      <!-- Q5 -->
+      <div class="question">
+        <label>Do you remember the ledger books from finishing school? What do you remember about them?</label>
+        <textarea name="finishing_school_memory" placeholder="Whatever comes to mind..."></textarea>
+      </div>
+      <!-- Q6 -->
+      <div class="question">
+        <label>If you do keep notes or records, where do you keep them?</label>
+        <p class="hint">Select all that apply</p>
+        <div class="option-group">
+          <label><input type="checkbox" name="current_tools" value="phone_notes"><span>Phone notes</span></label>
+          <label><input type="checkbox" name="current_tools" value="notebook"><span>A physical notebook or journal</span></label>
+          <label><input type="checkbox" name="current_tools" value="photos"><span>Photos on my phone</span></label>
+          <label><input type="checkbox" name="current_tools" value="spreadsheet"><span>Spreadsheet</span></label>
+          <label><input type="checkbox" name="current_tools" value="pinterest"><span>Pinterest boards</span></label>
+          <label><input type="checkbox" name="current_tools" value="none"><span>I don't really keep records</span></label>
+          <div class="other-wrapper">
+            <input type="checkbox" name="current_tools" value="other" id="q6other">
+            <input type="text" name="current_tools_other" placeholder="Other...">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- SECTION 3: Reacting to The Ledger -->
+    <div class="form-section">
+      <div class="section-title">Reacting to The Ledger</div>
+      <!-- Q7 -->
+      <div class="question">
+        <label>After watching the demo video, what's your first reaction?</label>
+        <p class="hint">Raw gut response — don't overthink it</p>
+        <textarea name="first_reaction" placeholder="What struck you first..."></textarea>
+      </div>
+      <!-- Q8 -->
+      <div class="question">
+        <label>Which of these features would you actually use? Be honest — "none of these" is a perfectly useful answer.</label>
+        <p class="hint">Select all that apply</p>
+        <div class="option-group">
+          <label><input type="checkbox" name="features" value="event_recording"><span>Recording events with menus, guests, and notes</span></label>
+          <label><input type="checkbox" name="features" value="guest_profiles"><span>Guest profiles — dietary preferences, what they've been served before</span></label>
+          <label><input type="checkbox" name="features" value="weekly_menu"><span>Weekly house menu planning</span></label>
+          <label><input type="checkbox" name="features" value="gift_tracking"><span>Gift tracking</span></label>
+          <label><input type="checkbox" name="features" value="seating"><span>Seating chart planning</span></label>
+          <label><input type="checkbox" name="features" value="reflection"><span>Post-event reflection / notes for next time</span></label>
+          <label><input type="checkbox" name="features" value="wine"><span>Wine and drink pairing notes</span></label>
+          <label><input type="checkbox" name="features" value="photos"><span>Photo archive of past events</span></label>
+          <div class="other-wrapper">
+            <input type="checkbox" name="features" value="other" id="q8other">
+            <input type="text" name="features_other" placeholder="Something else...">
+          </div>
+        </div>
+      </div>
+      <!-- Q9 -->
+      <div class="question">
+        <label>What would make you <em>not</em> use something like this?</label>
+        <p class="hint">This is the most helpful question on this form. Be brutally honest.</p>
+        <textarea name="objections" placeholder="Too complicated, no time, already have a system, wouldn't remember to use it..."></textarea>
+      </div>
+      <!-- Q10 -->
+      <div class="question">
+        <label>If The Ledger could do one magical thing for you when it comes to hosting or entertaining, what would it be?</label>
+        <textarea name="dream_feature" placeholder="Dream big..."></textarea>
+      </div>
+    </div>
+    <!-- SECTION 4: Quick Logistics -->
+    <div class="form-section">
+      <div class="section-title">Quick Logistics</div>
+      <!-- Q11 -->
+      <div class="question">
+        <label>What device would you most likely use this on?</label>
+        <div class="option-group">
+          <label><input type="radio" name="device" value="iphone" required><span>iPhone</span></label>
+          <label><input type="radio" name="device" value="ipad"><span>iPad</span></label>
+          <label><input type="radio" name="device" value="computer"><span>Computer / laptop</span></label>
+          <label><input type="radio" name="device" value="android"><span>Android phone</span></label>
+        </div>
+      </div>
+      <!-- Q12 -->
+      <div class="question">
+        <label>Would you be open to a 15–20 min follow-up call if I have questions about your answers? No pressure!</label>
+        <div class="option-group">
+          <label><input type="radio" name="follow_up" value="yes" required><span>Yes, happy to</span></label>
+          <label><input type="radio" name="follow_up" value="maybe"><span>Maybe, depends on timing</span></label>
+          <label><input type="radio" name="follow_up" value="no"><span>I'd prefer to keep it to this form</span></label>
+        </div>
+      </div>
+      <!-- Q13 -->
+      <div class="question">
+        <label>Anything else you want to tell me?</label>
+        <textarea class="short" name="anything_else" placeholder="Totally optional..."></textarea>
+      </div>
+    </div>
+    <!-- Submit -->
+    <div class="submit-section">
+      <p class="closing">Thank you for taking the time. Your honesty shapes everything I build next.</p>
+      <button type="submit">Send My Answers</button>
+    </div>
+  </form>
+  <!-- Success state (shown after submit) -->
+  <div class="success-message" id="successMessage">
+    <h2>Thank you, truly.</h2>
+    <p>Your answers mean more than you know. I'll be in touch if I have follow-up questions — and I can't wait to show you what comes next.</p>
+    <p style="margin-top: 24px; color: var(--accent);">— Lara</p>
+  </div>
+  <div class="form-footer">
+    <div class="mark">The Ledger</div>
+  </div>
+</div>
+<script>
+  // Handle form submission
+  const form = document.getElementById('discoveryForm');
+  const successMessage = document.getElementById('successMessage');
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    // Collect checkbox values into arrays
+    const data = {};
+    for (const [key, value] of formData.entries()) {
+      if (data[key]) {
+        if (Array.isArray(data[key])) {
+          data[key].push(value);
+        } else {
+          data[key] = [data[key], value];
+        }
+      } else {
+        data[key] = value;
+      }
+    }
+    // Convert arrays to comma-separated for readability
+    for (const key in data) {
+      if (Array.isArray(data[key])) {
+        data[key] = data[key].join(', ');
+      }
+    }
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (response.ok) {
+        form.style.display = 'none';
+        successMessage.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        // Fallback: try mailto
+        alert('Thank you! If the form didn\'t submit, please screenshot your answers and send them to Lara directly.');
+      }
+    } catch (err) {
+      // If Formspree isn't configured yet, show success anyway for testing
+      form.style.display = 'none';
+      successMessage.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+  // Auto-check "Other" checkbox when typing in the other field
+  document.querySelectorAll('.other-wrapper input[type="text"]').forEach(input => {
+    input.addEventListener('focus', () => {
+      const checkbox = input.parentElement.querySelector('input[type="checkbox"]');
+      if (checkbox) checkbox.checked = true;
+    });
+  });
+</script>
+</body>
+</html>
