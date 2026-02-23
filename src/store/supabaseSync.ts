@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { Event, Guest, LedgerProfile, WeeklyMenu } from '../types';
+import { Event, Guest, LedgerProfile, WeeklyMenu, AttendingEvent } from '../types';
 
 // Mapping helpers: Supabase snake_case ↔ app camelCase
 
@@ -188,6 +188,20 @@ export async function syncFromSupabase(): Promise<void> {
     const menus = menuRows.map(rowToMenu);
     localStorage.setItem('ledger_menus', JSON.stringify(menus));
   }
+
+  // Fetch attending events
+  const { data: attendingRows } = await supabase
+    .from('attending_events')
+    .select('*')
+    .eq('user_id', user.id);
+
+  if (attendingRows) {
+    const attending = attendingRows.map((row: Record<string, unknown>) => ({
+      ...(row.data as object),
+      id: row.id as string,
+    })) as AttendingEvent[];
+    localStorage.setItem('ledger_attending', JSON.stringify(attending));
+  }
 }
 
 // --- Write-through: save to Supabase when saving locally ---
@@ -265,4 +279,29 @@ export async function syncDeleteMenuToSupabase(menuId: string): Promise<void> {
     .from('menus')
     .delete()
     .eq('id', menuId);
+}
+
+// Attending events use a simple JSONB approach — store the whole object as `data`
+export async function syncAttendingToSupabase(event: AttendingEvent): Promise<void> {
+  if (!isSupabaseConfigured) return;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase
+    .from('attending_events')
+    .upsert({
+      id: event.id,
+      user_id: user.id,
+      data: event,
+      updated_at: new Date().toISOString(),
+    });
+}
+
+export async function syncDeleteAttendingToSupabase(eventId: string): Promise<void> {
+  if (!isSupabaseConfigured) return;
+
+  await supabase
+    .from('attending_events')
+    .delete()
+    .eq('id', eventId);
 }

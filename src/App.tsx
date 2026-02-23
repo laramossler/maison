@@ -14,6 +14,9 @@ import WeeklyMenuList from './pages/WeeklyMenuList';
 import WeeklyMenuView from './pages/WeeklyMenuView';
 import WeeklyMenuEdit from './pages/WeeklyMenuEdit';
 import KitchenBrief from './pages/KitchenBrief';
+import AttendingList from './pages/AttendingList';
+import NewAttending from './pages/NewAttending';
+import AttendingDetail from './pages/AttendingDetail';
 import Login from './pages/Login';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { initializeSampleData, getProfile, saveProfile } from './store';
@@ -91,6 +94,9 @@ function AppContent() {
           <Route path="/menu" element={<WeeklyMenuList />} />
           <Route path="/menu/:id" element={<WeeklyMenuView />} />
           <Route path="/menu/:id/edit" element={<WeeklyMenuEdit />} />
+          <Route path="/attending" element={<AttendingList />} />
+          <Route path="/attending/new" element={<NewAttending />} />
+          <Route path="/attending/:id" element={<AttendingDetail />} />
         </Routes>
       </Layout>
     </Router>

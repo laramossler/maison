@@ -1,4 +1,4 @@
-import { Event, Guest, LedgerProfile, WeeklyMenu, PantrySlot, ReadyBoardItem, DEFAULT_PANTRY_SLOTS, DAYS_OF_WEEK } from '../types';
+import { Event, Guest, LedgerProfile, WeeklyMenu, AttendingEvent, PantrySlot, ReadyBoardItem, DEFAULT_PANTRY_SLOTS, DAYS_OF_WEEK } from '../types';
 import {
   syncEventToSupabase,
   syncDeleteEventToSupabase,
@@ -7,12 +7,15 @@ import {
   syncProfileToSupabase,
   syncMenuToSupabase,
   syncDeleteMenuToSupabase,
+  syncAttendingToSupabase,
+  syncDeleteAttendingToSupabase,
 } from './supabaseSync';
 
 const EVENTS_KEY = 'ledger_events';
 const GUESTS_KEY = 'ledger_guests';
 const PROFILE_KEY = 'ledger_profile';
 const MENUS_KEY = 'ledger_menus';
+const ATTENDING_KEY = 'ledger_attending';
 const PANTRY_DEFAULTS_KEY = 'ledger_pantry_defaults';
 const READY_BOARD_KEY = 'ledger_ready_board';
 const INITIALIZED_KEY = 'ledger_initialized_v4';
@@ -186,6 +189,36 @@ export function createBlankMenu(weekStart: Date): WeeklyMenu {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
+}
+
+// --- Attending Events ---
+
+export function getAttendingEvents(): AttendingEvent[] {
+  const raw = localStorage.getItem(ATTENDING_KEY);
+  return raw ? JSON.parse(raw) : [];
+}
+
+export function getAttendingEvent(id: string): AttendingEvent | undefined {
+  return getAttendingEvents().find(e => e.id === id);
+}
+
+export function saveAttendingEvent(event: AttendingEvent): void {
+  const events = getAttendingEvents();
+  const idx = events.findIndex(e => e.id === event.id);
+  const updated = { ...event, updatedAt: new Date().toISOString() };
+  if (idx >= 0) {
+    events[idx] = updated;
+  } else {
+    events.push(updated);
+  }
+  localStorage.setItem(ATTENDING_KEY, JSON.stringify(events));
+  syncAttendingToSupabase(updated);
+}
+
+export function deleteAttendingEvent(id: string): void {
+  const events = getAttendingEvents().filter(e => e.id !== id);
+  localStorage.setItem(ATTENDING_KEY, JSON.stringify(events));
+  syncDeleteAttendingToSupabase(id);
 }
 
 export function getGuestGatheringHistory(guestId: string): Event[] {

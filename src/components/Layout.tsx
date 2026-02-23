@@ -14,9 +14,10 @@ const OrnamentalRule: React.FC = () => (
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const isGatheringsSection = location.pathname === '/' || location.pathname === '/new' || location.pathname.startsWith('/event');
+  const isAttendingSection = location.pathname.startsWith('/attending');
   const isGuestSection = location.pathname.startsWith('/guest');
   const isMenuSection = location.pathname.startsWith('/menu');
-  const isTopLevel = location.pathname === '/' || location.pathname === '/guests' || location.pathname === '/menu';
+  const isTopLevel = location.pathname === '/' || location.pathname === '/guests' || location.pathname === '/menu' || location.pathname === '/attending';
   const [profile, setProfile] = useState<LedgerProfile | null>(null);
 
   useEffect(() => {
@@ -66,17 +67,28 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <OrnamentalRule />
               </div>
 
-              <nav className="mt-4 flex items-center justify-center gap-6">
+              <nav className="mt-4 flex items-center justify-center gap-5">
                 <Link
                   to="/"
                   className={`font-sans text-[10px] uppercase tracking-[0.16em] transition-colors duration-400 pb-1
-                    ${isGatheringsSection && !isMenuSection
+                    ${isGatheringsSection && !isMenuSection && !isAttendingSection
                       ? 'text-gold border-b border-gold/40'
                       : 'text-warm-gray/50 hover:text-warm-gray border-b border-transparent'
                     }
                   `}
                 >
                   Gatherings
+                </Link>
+                <Link
+                  to="/attending"
+                  className={`font-sans text-[10px] uppercase tracking-[0.16em] transition-colors duration-400 pb-1
+                    ${isAttendingSection
+                      ? 'text-gold border-b border-gold/40'
+                      : 'text-warm-gray/50 hover:text-warm-gray border-b border-transparent'
+                    }
+                  `}
+                >
+                  Attending
                 </Link>
                 <Link
                   to="/menu"

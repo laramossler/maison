@@ -267,3 +267,126 @@ export const READY_BOARD_CATEGORIES: { key: ReadyBoardItem['category']; label: s
 ];
 
 export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+// --- Attending Mode ---
+
+export type AttendingPhase = 'invited' | 'preparing' | 'day-of' | 'debrief' | 'follow-up' | 'complete';
+export type InvitationType = 'text' | 'email' | 'verbal' | 'formal' | 'calendar';
+export type FormalityLevel = 'casual' | 'semi-formal' | 'formal';
+export type ThankYouMethod = 'text' | 'handwritten' | 'email' | 'call';
+
+export const ATTENDING_PHASE_LABELS: Record<AttendingPhase, string> = {
+  'invited': 'Invited',
+  'preparing': 'Preparing',
+  'day-of': 'Day Of',
+  'debrief': 'Debrief',
+  'follow-up': 'Follow-Up',
+  'complete': 'Complete',
+};
+
+export const FORMALITY_LABELS: Record<FormalityLevel, string> = {
+  'casual': 'Casual',
+  'semi-formal': 'Semi-Formal',
+  'formal': 'Formal',
+};
+
+export const INVITATION_TYPE_LABELS: Record<InvitationType, string> = {
+  'text': 'Text',
+  'email': 'Email',
+  'verbal': 'Verbal',
+  'formal': 'Formal Invitation',
+  'calendar': 'Calendar',
+};
+
+export const THANK_YOU_METHOD_LABELS: Record<ThankYouMethod, string> = {
+  'text': 'Text Message',
+  'handwritten': 'Handwritten Note',
+  'email': 'Email',
+  'call': 'Phone Call',
+};
+
+export interface ConversationTheme {
+  topic: string;
+  openingQuestion?: string;
+  notes?: string;
+}
+
+export interface AttendingGuestEntry {
+  guestId?: string;
+  name: string;
+  relationship?: string;
+  notes?: string;
+}
+
+export interface DebriefGuestNote {
+  guestId?: string;
+  name: string;
+  whatILearned?: string;
+  followUpNeeded?: string;
+}
+
+export interface AttendingFollowUp {
+  guestId?: string;
+  guestName: string;
+  action: string;
+  dueDate?: string;
+  completed: boolean;
+  completedDate?: string;
+}
+
+export interface AttendingEvent {
+  id: string;
+  mode: 'attending';
+
+  // Phase 1: Invitation
+  eventName: string;
+  hostName: string;
+  hostId?: string;
+  date: string;
+  time?: string;
+  location?: string;
+  dressCode?: string;
+  invitationType: InvitationType;
+  formalityLevel: FormalityLevel;
+  guestList: AttendingGuestEntry[];
+
+  // Phase 2: Preparation
+  conversationPrep: {
+    themes: ConversationTheme[];
+    minefields?: string;
+  };
+  gift: {
+    description: string;
+    category?: string;
+    notes?: string;
+  } | null;
+  outfit: {
+    description: string;
+    designer?: string;
+    accessories?: string;
+  } | null;
+
+  // Phase 4: Debrief
+  debrief: {
+    overallImpression?: string;
+    guestNotes: DebriefGuestNote[];
+    conversationHighlights?: string;
+    hostNotes?: string;
+  } | null;
+
+  // Phase 5: Follow-up
+  thankYou: {
+    method: ThankYouMethod;
+    sent: boolean;
+    sentDate?: string;
+    content?: string;
+  } | null;
+  followUps: AttendingFollowUp[];
+
+  // Status
+  phase: AttendingPhase;
+
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+}
