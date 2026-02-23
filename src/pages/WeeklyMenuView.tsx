@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { WeeklyMenu } from '../types';
-import { getMenu, getProfile } from '../store';
+import { getMenu, getProfile, getReflectionByMenuId } from '../store';
 import { LedgerProfile } from '../types';
 import PageTransition from '../components/PageTransition';
 
@@ -9,11 +9,16 @@ const WeeklyMenuView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [menu, setMenu] = useState<WeeklyMenu | null>(null);
   const [profile, setProfile] = useState<LedgerProfile | null>(null);
+  const [linkedReflectionId, setLinkedReflectionId] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
       const m = getMenu(id);
-      if (m) setMenu(m);
+      if (m) {
+        setMenu(m);
+        const ref = getReflectionByMenuId(m.id);
+        if (ref) setLinkedReflectionId(ref.id);
+      }
     }
     setProfile(getProfile());
   }, [id]);
@@ -227,6 +232,21 @@ const WeeklyMenuView: React.FC = () => {
           >
             Edit Menu
           </Link>
+          {linkedReflectionId ? (
+            <Link
+              to={`/reflection/${linkedReflectionId}`}
+              className="font-sans text-[11px] uppercase tracking-label text-warm-gray hover:text-gold transition-colors duration-300"
+            >
+              View Reflection
+            </Link>
+          ) : (
+            <Link
+              to={`/reflection/new?menu=${menu.id}`}
+              className="font-sans text-[11px] uppercase tracking-label text-warm-gray hover:text-gold transition-colors duration-300"
+            >
+              Write Reflection
+            </Link>
+          )}
         </div>
       </div>
     </PageTransition>

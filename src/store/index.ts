@@ -1,4 +1,4 @@
-import { Event, Guest, LedgerProfile, WeeklyMenu, AttendingEvent, PantrySlot, ReadyBoardItem, DEFAULT_PANTRY_SLOTS, DAYS_OF_WEEK } from '../types';
+import { Event, Guest, LedgerProfile, WeeklyMenu, AttendingEvent, WeeklyReflection, PantrySlot, ReadyBoardItem, DEFAULT_PANTRY_SLOTS, DAYS_OF_WEEK } from '../types';
 import {
   syncEventToSupabase,
   syncDeleteEventToSupabase,
@@ -9,6 +9,8 @@ import {
   syncDeleteMenuToSupabase,
   syncAttendingToSupabase,
   syncDeleteAttendingToSupabase,
+  syncReflectionToSupabase,
+  syncDeleteReflectionToSupabase,
 } from './supabaseSync';
 
 const EVENTS_KEY = 'ledger_events';
@@ -16,6 +18,7 @@ const GUESTS_KEY = 'ledger_guests';
 const PROFILE_KEY = 'ledger_profile';
 const MENUS_KEY = 'ledger_menus';
 const ATTENDING_KEY = 'ledger_attending';
+const REFLECTIONS_KEY = 'ledger_reflections';
 const PANTRY_DEFAULTS_KEY = 'ledger_pantry_defaults';
 const READY_BOARD_KEY = 'ledger_ready_board';
 const INITIALIZED_KEY = 'ledger_initialized_v4';
@@ -219,6 +222,44 @@ export function deleteAttendingEvent(id: string): void {
   const events = getAttendingEvents().filter(e => e.id !== id);
   localStorage.setItem(ATTENDING_KEY, JSON.stringify(events));
   syncDeleteAttendingToSupabase(id);
+}
+
+// --- Weekly Reflections ---
+
+export function getReflections(): WeeklyReflection[] {
+  const raw = localStorage.getItem(REFLECTIONS_KEY);
+  return raw ? JSON.parse(raw) : [];
+}
+
+export function getReflection(id: string): WeeklyReflection | undefined {
+  return getReflections().find(r => r.id === id);
+}
+
+export function getReflectionByWeek(weekStartDate: string): WeeklyReflection | undefined {
+  return getReflections().find(r => r.weekStartDate === weekStartDate);
+}
+
+export function getReflectionByMenuId(menuId: string): WeeklyReflection | undefined {
+  return getReflections().find(r => r.linkedMenuId === menuId);
+}
+
+export function saveReflection(reflection: WeeklyReflection): void {
+  const reflections = getReflections();
+  const idx = reflections.findIndex(r => r.id === reflection.id);
+  const updated = { ...reflection, updatedAt: new Date().toISOString() };
+  if (idx >= 0) {
+    reflections[idx] = updated;
+  } else {
+    reflections.push(updated);
+  }
+  localStorage.setItem(REFLECTIONS_KEY, JSON.stringify(reflections));
+  syncReflectionToSupabase(updated);
+}
+
+export function deleteReflection(id: string): void {
+  const reflections = getReflections().filter(r => r.id !== id);
+  localStorage.setItem(REFLECTIONS_KEY, JSON.stringify(reflections));
+  syncDeleteReflectionToSupabase(id);
 }
 
 export function getGuestGatheringHistory(guestId: string): Event[] {

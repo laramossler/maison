@@ -334,6 +334,61 @@ export interface AttendingFollowUp {
   completedDate?: string;
 }
 
+// --- Weekly Kitchen Reflection ---
+
+export interface ReflectionEntry {
+  title: string;
+  description: string;
+  tags: string[];
+}
+
+export interface DidntMakeEntry {
+  title: string;
+  description?: string;
+  carryForward: boolean;
+}
+
+export interface RecipeBoxEntry {
+  title: string;
+  quickRecipe: string;
+  status: 'new_keeper' | 'needs_tweaking';
+}
+
+export interface KitchenNote {
+  item: string;
+  note: string;
+}
+
+export interface WeeklyReflection {
+  id: string;
+  weekStartDate: string;
+  weekEndDate: string;
+  linkedMenuId?: string;
+
+  whatLanded: ReflectionEntry[];
+  whatILearned: ReflectionEntry[];
+  didntMake: DidntMakeEntry[];
+  ideasSparked: ReflectionEntry[];
+  recipeBox: RecipeBoxEntry[];
+  patternInsight: string;
+  kitchenNotes: KitchenNote[];
+  carryForward: {
+    makeNextWeek: string[];
+    futureProjects: string[];
+  };
+
+  sourceType: 'voice' | 'text' | 'conversation';
+  rawInput?: string;
+
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const STATUS_TAGS = ['REPEATABLE', 'KEEPER RECIPE', 'NEEDS TWEAKING', 'GOOD BONES', 'WORKHORSE', 'IMPROVISED', 'NEW KEEPER'];
+export const TYPE_TAGS = ['FREEZER STAPLE', 'TECHNIQUE', 'TECHNIQUE EXPANSION', 'LEFTOVERS WIN', 'FERMENT', 'SHAREABLE', 'FUTURE PROJECT', 'SEASONAL IDEA', 'GUEST WORTHY'];
+export const DOMAIN_TAGS = ['SCOPE', 'TIMING', 'EQUIPMENT', 'GRAINS', 'WINTER KITCHEN', 'SUMMER KITCHEN', 'TECHNIQUE'];
+export const ALL_REFLECTION_TAGS = Array.from(new Set([...STATUS_TAGS, ...TYPE_TAGS, ...DOMAIN_TAGS]));
+
 export interface AttendingEvent {
   id: string;
   mode: 'attending';

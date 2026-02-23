@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { Event, Guest, LedgerProfile, WeeklyMenu, AttendingEvent } from '../types';
+import { Event, Guest, LedgerProfile, WeeklyMenu, AttendingEvent, WeeklyReflection } from '../types';
 
 // Mapping helpers: Supabase snake_case ↔ app camelCase
 
@@ -202,6 +202,20 @@ export async function syncFromSupabase(): Promise<void> {
     })) as AttendingEvent[];
     localStorage.setItem('ledger_attending', JSON.stringify(attending));
   }
+
+  // Fetch weekly reflections
+  const { data: reflectionRows } = await supabase
+    .from('weekly_reflections')
+    .select('*')
+    .eq('user_id', user.id);
+
+  if (reflectionRows) {
+    const reflections = reflectionRows.map((row: Record<string, unknown>) => ({
+      ...(row.data as object),
+      id: row.id as string,
+    })) as WeeklyReflection[];
+    localStorage.setItem('ledger_reflections', JSON.stringify(reflections));
+  }
 }
 
 // --- Write-through: save to Supabase when saving locally ---
@@ -304,4 +318,29 @@ export async function syncDeleteAttendingToSupabase(eventId: string): Promise<vo
     .from('attending_events')
     .delete()
     .eq('id', eventId);
+}
+
+// Weekly reflections use a simple JSONB approach
+export async function syncReflectionToSupabase(reflection: WeeklyReflection): Promise<void> {
+  if (!isSupabaseConfigured) return;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase
+    .from('weekly_reflections')
+    .upsert({
+      id: reflection.id,
+      user_id: user.id,
+      data: reflection,
+      updated_at: new Date().toISOString(),
+    });
+}
+
+export async function syncDeleteReflectionToSupabase(reflectionId: string): Promise<void> {
+  if (!isSupabaseConfigured) return;
+
+  await supabase
+    .from('weekly_reflections')
+    .delete()
+    .eq('id', reflectionId);
 }

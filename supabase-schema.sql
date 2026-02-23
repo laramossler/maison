@@ -89,8 +89,17 @@ create table attending_events (
   updated_at timestamptz default now()
 );
 
+-- Weekly Reflections (JSONB approach)
+create table weekly_reflections (
+  id text primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  data jsonb not null default '{}',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
 -- Migration for existing deployments:
--- Run the attending_events CREATE TABLE and its RLS policies below.
+-- Run the attending_events and weekly_reflections CREATE TABLE statements and their RLS policies below.
 
 -- Enable Row Level Security on all tables
 alter table profiles enable row level security;
@@ -98,6 +107,7 @@ alter table guests enable row level security;
 alter table events enable row level security;
 alter table menus enable row level security;
 alter table attending_events enable row level security;
+alter table weekly_reflections enable row level security;
 
 -- Profiles: users can only access their own
 create policy "Users can view own profile"
@@ -146,6 +156,16 @@ create policy "Users can update own attending"
   on attending_events for update using (auth.uid() = user_id);
 create policy "Users can delete own attending"
   on attending_events for delete using (auth.uid() = user_id);
+
+-- Weekly Reflections: users can only access their own
+create policy "Users can view own reflections"
+  on weekly_reflections for select using (auth.uid() = user_id);
+create policy "Users can insert own reflections"
+  on weekly_reflections for insert with check (auth.uid() = user_id);
+create policy "Users can update own reflections"
+  on weekly_reflections for update using (auth.uid() = user_id);
+create policy "Users can delete own reflections"
+  on weekly_reflections for delete using (auth.uid() = user_id);
 
 -- Auto-create profile on signup
 create or replace function public.handle_new_user()

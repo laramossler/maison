@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { WeeklyMenu } from '../types';
-import { getMenus, getMonday, getMenuByWeek } from '../store';
+import { WeeklyMenu, WeeklyReflection } from '../types';
+import { getMenus, getMonday, getMenuByWeek, getReflections } from '../store';
 import PageTransition from '../components/PageTransition';
 
 const WeeklyMenuList: React.FC = () => {
   const navigate = useNavigate();
   const [menus, setMenus] = useState<WeeklyMenu[]>([]);
+  const [reflections, setReflections] = useState<WeeklyReflection[]>([]);
   const [currentWeekMenu, setCurrentWeekMenu] = useState<WeeklyMenu | null>(null);
 
   useEffect(() => {
     const all = getMenus().sort((a, b) => b.weekStartDate.localeCompare(a.weekStartDate));
     setMenus(all);
+    setReflections(getReflections());
 
     const monday = getMonday(new Date());
     const weekStart = monday.toISOString().split('T')[0];
@@ -49,7 +51,7 @@ const WeeklyMenuList: React.FC = () => {
     <PageTransition>
       <div className="pt-6">
         {/* This Week CTA */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 flex items-center justify-center gap-4 flex-wrap">
           {currentWeekMenu ? (
             <Link
               to={`/menu/${currentWeekMenu.id}`}
@@ -65,6 +67,12 @@ const WeeklyMenuList: React.FC = () => {
               Plan This Week&rsquo;s Menu
             </button>
           )}
+          <Link
+            to="/reflection/new"
+            className="inline-block font-sans text-[11px] uppercase tracking-label text-warm-gray hover:text-gold transition-colors duration-300"
+          >
+            + Write Reflection
+          </Link>
         </div>
 
         {menus.length === 0 ? (
@@ -126,6 +134,58 @@ const WeeklyMenuList: React.FC = () => {
                   </Link>
                 );
               })}
+            </div>
+
+            <div className="flex items-center gap-3 mt-6">
+              <div className="flex-1 border-t border-rule" />
+              <span className="text-gold/40 text-[7px] leading-none" style={{ fontFamily: 'serif' }}>&#9830;</span>
+              <div className="flex-1 border-t border-rule" />
+            </div>
+          </>
+        )}
+
+        {/* Reflections */}
+        {reflections.length > 0 && (
+          <>
+            <h2 className="font-sans text-[10px] uppercase tracking-[0.16em] text-warm-gray/50 text-center mb-6 mt-10">
+              Kitchen Reflections
+            </h2>
+
+            <div className="space-y-0">
+              {reflections
+                .sort((a, b) => b.weekStartDate.localeCompare(a.weekStartDate))
+                .map((ref, index) => {
+                  const start = new Date(ref.weekStartDate + 'T00:00:00');
+                  const weekLabel = `Week of ${start.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}`;
+                  const landedCount = ref.whatLanded.length;
+                  const recipeCount = ref.recipeBox.length;
+
+                  return (
+                    <Link
+                      key={ref.id}
+                      to={`/reflection/${ref.id}`}
+                      className="block group"
+                    >
+                      {index > 0 && <div className="border-t border-rule" />}
+                      <div className="py-5 text-center transition-all duration-300">
+                        <span className="block font-sans text-[10px] uppercase tracking-[0.16em] text-gold/60 mb-2">
+                          {weekLabel}
+                        </span>
+
+                        {ref.whatLanded.length > 0 && (
+                          <p className="font-body text-sm text-ink/60 italic group-hover:text-gold/70 transition-colors duration-400">
+                            {ref.whatLanded.slice(0, 3).map(e => e.title).join(' \u00b7 ')}
+                          </p>
+                        )}
+
+                        <p className="font-sans text-[9px] uppercase tracking-label text-warm-gray/40 mt-2">
+                          {landedCount} {landedCount === 1 ? 'win' : 'wins'}
+                          {recipeCount > 0 && <> &middot; {recipeCount} {recipeCount === 1 ? 'recipe' : 'recipes'}</>}
+                        </p>
+                      </div>
+                    </Link>
+                  );
+                })}
             </div>
 
             <div className="flex items-center gap-3 mt-6">
