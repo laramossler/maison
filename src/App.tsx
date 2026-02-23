@@ -81,6 +81,7 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           <Route path="/new" element={<NewEvent />} />
           <Route path="/event/:id" element={<EventDetail />} />
+          <Route path="/event/:id/edit" element={<NewEvent />} />
           <Route path="/event/:id/reflect" element={<Reflection />} />
           <Route path="/event/:id/brief" element={<KitchenBrief />} />
           <Route path="/guests" element={<GuestBook />} />

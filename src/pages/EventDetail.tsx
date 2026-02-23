@@ -354,6 +354,12 @@ const EventDetail: React.FC = () => {
             </Link>
           )}
           <Link
+            to={`/event/${event.id}/edit`}
+            className="font-sans text-[11px] uppercase tracking-label text-warm-gray hover:text-gold transition-colors duration-300"
+          >
+            Edit
+          </Link>
+          <Link
             to={`/event/${event.id}/brief`}
             className="font-sans text-[11px] uppercase tracking-label text-warm-gray hover:text-gold transition-colors duration-300"
           >

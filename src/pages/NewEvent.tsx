@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { Event, Guest, Course, Wine, TimelineEntry, OCCASION_LABELS, COURSE_TYPES, COURSE_LABELS } from '../types';
-import { saveEvent, getGuests, saveGuest, getGuestGatheringHistory } from '../store';
+import { saveEvent, getEvent, getGuests, saveGuest, getGuestGatheringHistory } from '../store';
 import PageTransition from '../components/PageTransition';
 
 type Step = 'occasion' | 'guests' | 'menu' | 'atmosphere' | 'outfit' | 'timeline' | 'review';
@@ -88,6 +88,8 @@ const GuestIntelligence: React.FC<{ guest: Guest; isGuestOfHonor: boolean }> = (
 
 const NewEvent: React.FC = () => {
   const navigate = useNavigate();
+  const { id: editId } = useParams<{ id: string }>();
+  const isEditing = Boolean(editId);
   const [currentStep, setCurrentStep] = useState<Step>('occasion');
 
   // Form state
@@ -97,6 +99,8 @@ const NewEvent: React.FC = () => {
   const [occasion, setOccasion] = useState<Event['occasion']>('dinner');
   const [location, setLocation] = useState('');
   const [status, setStatus] = useState<Event['status']>('planning');
+  const [existingCreatedAt, setExistingCreatedAt] = useState<string | null>(null);
+  const [existingReflection, setExistingReflection] = useState<Event['reflection']>(undefined);
 
   // Guests
   const [existingGuests, setExistingGuests] = useState<Guest[]>([]);
@@ -138,6 +142,38 @@ const NewEvent: React.FC = () => {
   useEffect(() => {
     setExistingGuests(getGuests().sort((a, b) => a.name.localeCompare(b.name)));
   }, []);
+
+  // Load existing event data in edit mode
+  useEffect(() => {
+    if (editId) {
+      const existing = getEvent(editId);
+      if (existing) {
+        setTitle(existing.title);
+        setPurpose(existing.purpose || '');
+        setDate(existing.date);
+        setOccasion(existing.occasion);
+        setLocation(existing.location);
+        setStatus(existing.status);
+        setSelectedGuestIds(existing.guestIds);
+        setGuestOfHonorId(existing.guestOfHonorId || '');
+        setCourses(existing.menu.courses);
+        setWines(existing.menu.wines);
+        setMenuNotes(existing.menu.notes);
+        setTableSettings(existing.atmosphere.tableSettings);
+        setFlowers(existing.atmosphere.flowers);
+        setLighting(existing.atmosphere.lighting);
+        setMusic(existing.atmosphere.music);
+        setScent(existing.atmosphere.scent);
+        setOutfitDescription(existing.outfit?.description || '');
+        setOutfitDesigner(existing.outfit?.designer || '');
+        setOutfitNotes(existing.outfit?.notes || '');
+        setTimeline(existing.plannedTimeline);
+        setSeatingNotes(existing.seatingNotes);
+        setExistingCreatedAt(existing.createdAt);
+        setExistingReflection(existing.reflection);
+      }
+    }
+  }, [editId]);
 
   const stepIndex = STEPS.findIndex(s => s.key === currentStep);
 
@@ -216,7 +252,7 @@ const NewEvent: React.FC = () => {
       : undefined;
 
     const event: Event = {
-      id: uuidv4(),
+      id: editId || uuidv4(),
       date,
       title,
       purpose: purpose.trim() || undefined,
@@ -229,8 +265,9 @@ const NewEvent: React.FC = () => {
       outfit,
       seatingNotes,
       plannedTimeline: timeline,
+      reflection: existingReflection,
       status,
-      createdAt: new Date().toISOString(),
+      createdAt: existingCreatedAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
     saveEvent(event);
@@ -277,7 +314,7 @@ const NewEvent: React.FC = () => {
           disabled={!title.trim() || !date}
           className="font-sans text-[11px] uppercase tracking-label text-gold border border-gold/40 px-8 py-2.5 hover:bg-gold/5 transition-all duration-400 disabled:opacity-30 disabled:cursor-default"
         >
-          Save to Ledger
+          {isEditing ? 'Save Changes' : 'Save to Ledger'}
         </button>
       ) : (
         <button
@@ -294,14 +331,14 @@ const NewEvent: React.FC = () => {
     <PageTransition>
       <div className="pt-8">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate(isEditing ? `/event/${editId}` : '/')}
           className="font-sans text-[10px] uppercase tracking-label text-warm-gray hover:text-gold transition-colors duration-300 mb-8 block"
         >
-          &larr; Your Gatherings
+          &larr; {isEditing ? 'Back to Event' : 'Your Gatherings'}
         </button>
 
         <h1 className="font-display text-3xl md:text-4xl text-ink font-light tracking-display mb-2">
-          New Gathering
+          {isEditing ? 'Edit Gathering' : 'New Gathering'}
         </h1>
         <div className="border-t border-rule mb-8 mt-6" />
 
